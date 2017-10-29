@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>R Package on A Hugo website</title>
+    <link>/categories/r-package/</link>
+    <description>Recent content in R Package on A Hugo website</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 05 Feb 2017 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/categories/r-package/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Looking Both Ways - Infix Functions</title>
+      <link>/2017/02/05/looking-both-ways---infix-functions/</link>
+      <pubDate>Sun, 05 Feb 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/2017/02/05/looking-both-ways---infix-functions/</guid>
+      <description>In your R journeys you may have come across some interesting functions like apply statements or even lm. One function that is particularly helpful (and interesting) is the piping operator (%&amp;gt;%) from the magrittr pacakge. You may have noticed that the piping operator is similar to the matrix multiplcation operator %*%, in that they are both sandwitch functions (may or may not be trying to coin this term right now), as the function call is/are a symbol(s) enclosed by a % on both times.</description>
+    </item>
+    
+  </channel>
+</rss>

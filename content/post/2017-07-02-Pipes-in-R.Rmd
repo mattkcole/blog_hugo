@@ -1,0 +1,153 @@
+---
+title: "Beyond %>%, Alternative Pipes in R"
+author: "Matt Cole"
+slug: "pipes"
+date: 2017-07-02
+output: md_document
+categories: ["R"]
+tags: ["R", "data"]
+---
+
+Data scientists and the Mario Brothers agree - pipes rock.
+
+If you have been using R for data 'plumbing'/wrangling etc. you have undoubtedly came across the fantastic [dplyr](https://github.com/tidyverse/dplyr) package and then by default, the the standard pipe.
+
+The pipes we will be discussing today are from the [magrittr  pacakge](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html), which is where dplyr's 'standard' pipe comes from (repo is [here](https://github.com/tidyverse/magrittr)). Straight from the highly recommended magrittr [vignette](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html), the purpose of pipes and the magrittr package itself is to "decrease development time and to improve readability and maintainability of code" - who wouldn't like that?
+
+As mentioned above, pipes are a fantastic way to improve readability in your code, an attribute that has been written about [many](https://www.r-statistics.com/2014/08/simpler-r-coding-with-pipes-the-present-and-future-of-the-magrittr-package/) [times](http://www.econometricsbysimulation.com/2014/07/more-readable-code-with-pipes-in-r.html). This readability quickly translates into more efficient code by writing less, and understanding more.
+
+Let's take a tour:
+
+First of all, pipes are [infix functions](https://mattkcole.com/2017-02-22-intro-to-infix-functions/), which call their arguments on either side, instead of the more common prefix functions which take arguments after the function is called.
+
+Now, onto the magrittr pipes!
+
+
+### Standard pipe: `%>%`
+
+So, here we will do a short run through of the basic piping operator (%>%) for those new to the concept, and discuss some of other pipes that could be useful to experienced useRs. These pipes have a history of being introduced alongside the dplyr package, which together makes for some incredibly powerful, yet concise code (so powerful, during a technical job interview I was asked to stop using dplyr/pipes...).
+
+The standard pipe takes the object to its left, and passes it as the _first_ argument in the function to the right. When reading code, we can then read the pipe operator simply as: 'then'.
+
+```{r message=F, warning=F}
+library(datasets)
+library(dplyr)
+library(magrittr)
+trees %>%
+        dplyr::filter(Girth > 9) %>%
+        dplyr::select(Height, Volume) %>%
+        summary()
+```
+
+This can be read as "Take the trees data set, then show only the trees with girth greater than 9, then select the height and volume of those trees, then compute summary statistics on those two variables".
+
+Without pipes we'd use:
+
+```{r}
+# complete base R way:
+summary(trees[trees$Girth > 9, 2:3])
+
+# or
+
+# using dplyr
+trees_of_interest <- dplyr::filter(trees, Girth > 9)
+vars_of_interest <- dplyr::select(trees_of_interest, Height, Volume)
+summary(vars_of_interest)
+```
+
+
+Very quickly we can identify the benefits here, readability. With `%>%` we can read the data munging process from left to right, just like English. Compare this with the 'base R' approach in the second chunk - have to read as a mix of left to right with functions being called on parsed objects - quite a mess. Even using dplyr is not enough to make this process readable, we've just created two additional data frames just to compute these summary statistics (which, not to mention, could be computationally intense in bigger datasets).
+
+
+### Tree pipe: `%T>%`
+
+The tree pipe is very similar to the standard pipe, however, it returns the *left* input instead of the operated value. Check out the difference below:
+
+```{r}
+1:10 %>%
+        mean()
+```
+
+```{r}
+1:10 %T>%
+        mean()
+```
+
+You might be wondering why this is useful, which is fair. This operator works very well plotting data mid 'pipeline' as well as in some other, more niche areas.
+
+For example, say we are wrangling data, want to plot it, but also would like to visualize it:
+
+
+```{r}
+library(datasets)
+mtcars %>%
+        dplyr::group_by(cyl) %>%
+        dplyr::summarise(mean_hp = mean(hp)) %T>%
+        plot(main = "Horsepower by cylinders - mtcars edition",
+             xlab = "cylinders", ylab = "horse power",
+             type = "l", lwd = 3, col = "steelblue")
+```
+
+Here we were able to return a nice plot as well as a data matrix without rewriting / copy & pasting code.
+
+
+### Exposition pipe: `%$%`
+
+Admittedly, this is not a pipe operator I have used often (read: at all), but it is featured in the package. Essentially `%$%` is a 'pipe friendly' way to pull objects from a data frame, similarly to the base R method of using `$` to extract a single element (column) from an object (data frame, typically).
+
+Thus, writing this code to plot a box plot from the horsepower (hp) vector of the mtcars data could be written like this:
+
+```{r results='hide'}
+boxplot(mtcars$hp)
+```
+
+or, using the exposition pipe, like the following:
+
+```{r results='hide'}
+mtcars %$%
+  boxplot(hp)
+```
+
+Without knowing the exposition pipe I may have written the same code as:
+
+```{r results='hide'}
+mtcars %>%
+        dplyr::select(hp) %>%
+        boxplot()
+```
+
+This results in the exact same output as the previous two chunks, but is one line longer than the exposition example - I will be sure to include it in my toolbox!
+
+### compound assignment pipe: `%<>%`
+
+Here it is important to note that there are many different philosophies regarding nearly all aspects of data management, particularly when it comes to overwriting your data. While there are certain circumstances where overwriting may be ok, it is always important to be careful! The compound assignment pipe rewrites the left hand object with the output of the function to the right.
+
+In practice:
+
+```{r}
+set.seed(100)
+
+x <- rnorm(100)
+x %<>% round() %>% median()
+x
+```
+
+What happened here? We defined x as a string of 100 random standard normals, then reassigned x as the median rounded value. This could save a little bit of typing as I typically see the following:
+
+```{r}
+set.seed(100)
+
+x <- rnorm(100)
+x <- x %>% round() %>% median()
+x
+```
+
+### In short:
+
+Pipes are not absolutely required for any particular analysis, but can drastically improve readability and reduce the number of lines needed (two sometimes competing birds with one stone here!). Once you have mastered the standard pipe (`%>%`) you should spend some time exploring and utilizing the others, as they function well in different yet common situations. I for one am going to spend some more time with the exposition pipe which can help shave a line of code when selecting a single column from a data frame.
+
+## Follow the discussion
+
+Follow the discussion on [reddit](https://www.reddit.com/r/rstats/comments/6lvjfj/beyond_alternative_pipes_in_r/) or below!
+
+Let me know if you have any questions or comments!

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.30" />
+
+
+<title>Importing Functions From Github Into Your Package - A Hugo website</title>
+<meta property="og:title" content="Importing Functions From Github Into Your Package - A Hugo website">
+
+
+
+  
+
+
+
+
+
+
+
+
+<link href='//cdn.bootcss.com/highlight.js/9.11.0/styles/github.min.css' rel='stylesheet' type='text/css' />
+
+
+
+<link rel="stylesheet" href="/css/fonts.css" media="all">
+<link rel="stylesheet" href="/css/main.css" media="all">
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/" class="nav-logo">
+    <img src="/images/logo.png"
+         width="50"
+         height="50"
+         alt="Logo">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="/about/">About</a></li>
+    
+    <li><a href="https://github.com/rstudio/blogdown">GitHub</a></li>
+    
+    <li><a href="https://twitter.com/rstudio">Twitter</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">2 min read</span>
+    
+
+    <h1 class="article-title">Importing Functions From Github Into Your Package</h1>
+
+    
+    <span class="article-date">2017/10/24</span>
+    
+
+    <div class="article-content">
+      <p>Since the creation of the <code>devtools</code> package, it’s easier than ever to make and share R packages. This freedom has allowed pacakges to avoid the seemingly archaic process of submitting to CRAN, waiting for feedback, resubmitting… - While in the past, avoiding CRAN meant a significantly reduced audiance for your package, nowadays, easily posting to github means your pacakge is available to nearly every R user via <code>devtools::install_github()</code> not to mention other sources such as bitbucket or svn.</p>
+<p>It is not uncommon to use functions from these non-CRAN packages, and by extension, it is not uncommon to want to use functions from these packages in a package you’re trying to create.</p>
+<p>Becuase the standard <code>Import:</code> field in the DESCRIPTION file only searchs CRAN for packages, we need to get a little more creative to get a non-CRAN package’s function into our own.</p>
+<div id="solution-a-copy-the-function-into-our-package" class="section level2">
+<h2>Solution A: Copy the Function Into Our Package</h2>
+<p>A simple solution can be to just literally copy the package of interest into the new package. This is a very simple solution, but you’d want to check the target package’s liscence to make sure this is allowed, be sure to provide proper credit, and probably get the authors blessing. In addition, by doing this you’ll missout on any current work on the function which may or may not be helpful.</p>
+</div>
+<div id="solution-b-import-using-devtools" class="section level2">
+<h2>Solution B: Import using devtools</h2>
+<p>Using devtools, we can add a <code>Remotes:</code> field to our DESCRIPTION file and import the non-CRAN package.</p>
+<p>In a normal situation, where the package with the function of interest is on CRAN we would have a DESCRIPTION file that would look something like this:</p>
+<pre><code>.
+.
+.
+Import:
+    PackageNotOnCRAN
+Suggests:
+    devtools,
+    testthat</code></pre>
+<p>Instead, a super easy trick is to add a ‘remotes’ field into our DESCRIPTION file specifying the username/package_name target of our target package.</p>
+<pre><code>.
+.
+.
+Remotes:
+    github::User/PackageNotOnCRAN
+Import:
+    PackageNotOnCRAN
+Suggests:
+    devtools,
+    testthat</code></pre>
+<p>And thats it, we now will have access to all of the package’s functions while constructing our own. Not only will this work very well for files on github (github::), but works for git, bitbucket, local packages and more! Check out the link below.</p>
+<p>For more info, check <a href="https://cran.r-project.org/web/packages/devtools/vignettes/dependencies.html">this</a> out.</p>
+<p>A downside of this solution, is if you are trying to submit to CRAN, you must be importing only CRAN packages.</p>
+</div>
+
+    </div>
+  </article>
+
+  
+
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/images/hugo-logo.png" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+    
+
+
+
+<script src="//cdn.bootcss.com/highlight.js/9.11.0/highlight.min.js"></script>
+
+
+
+<script src="//cdn.bootcss.com/highlight.js/9.11.0/languages/r.min.js"></script>
+<script src="//cdn.bootcss.com/highlight.js/9.11.0/languages/yaml.min.js"></script>
+<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
+
+
+
+    
+
+    
+  </body>
+</html>
+

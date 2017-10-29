@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Github on A Hugo website</title>
+    <link>/tags/github/</link>
+    <description>Recent content in Github on A Hugo website</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 24 Oct 2017 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/github/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Importing Functions From Github Into Your Package</title>
+      <link>/2017/10/24/github_packages/</link>
+      <pubDate>Tue, 24 Oct 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/2017/10/24/github_packages/</guid>
+      <description>Since the creation of the devtools package, it’s easier than ever to make and share R packages. This freedom has allowed pacakges to avoid the seemingly archaic process of submitting to CRAN, waiting for feedback, resubmitting… - While in the past, avoiding CRAN meant a significantly reduced audiance for your package, nowadays, easily posting to github means your pacakge is available to nearly every R user via devtools::install_github() not to mention other sources such as bitbucket or svn.</description>
+    </item>
+    
+  </channel>
+</rss>

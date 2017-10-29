@@ -1,0 +1,8 @@
+base
+gtrendsR
+dplyr
+coda
+rjags
+R2jags
+jagstools
+knitr

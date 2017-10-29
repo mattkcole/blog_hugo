@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.30" />
+
+
+<title>Understanding Food Trends: A Baysian Approach to Forecasting Chipotle - A Hugo website</title>
+<meta property="og:title" content="Understanding Food Trends: A Baysian Approach to Forecasting Chipotle - A Hugo website">
+
+
+
+  
+
+
+
+
+
+
+
+
+<link href='//cdn.bootcss.com/highlight.js/9.11.0/styles/github.min.css' rel='stylesheet' type='text/css' />
+
+
+
+<link rel="stylesheet" href="/css/fonts.css" media="all">
+<link rel="stylesheet" href="/css/main.css" media="all">
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/" class="nav-logo">
+    <img src="/images/logo.png"
+         width="50"
+         height="50"
+         alt="Logo">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="/about/">About</a></li>
+    
+    <li><a href="https://github.com/rstudio/blogdown">GitHub</a></li>
+    
+    <li><a href="https://twitter.com/rstudio">Twitter</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">13 min read</span>
+    
+
+    <h1 class="article-title">Understanding Food Trends: A Baysian Approach to Forecasting Chipotle</h1>
+
+    
+    <span class="article-date">2017/09/27</span>
+    
+
+    <div class="article-content">
+      <p>Since food is such an important aspect of life and public health, I thought it would be exciting to look at food trends over time. Obviously food choices drive public health, but I figured that trends were just this - trends, preferences that may change over time. While a bit broad, I narrowed down ‘food trends’ to be interest in <a href="https://www.chipotle.com/">Chipotle Mexican Grill</a> - a fan favorite - over time. Since I don’t readily have any <em>real</em> Chipotle sales data, I decided to make my own - well, kinda.</p>
+<p>Using <a href="https://trends.google.com/trends/">Google trends</a>, we can look at “how often a particular search-term is entered relative to the total search-volume across various regions of the world”, and this, if we squint, might be <a href="https://static.googleusercontent.com/media/www.google.com/en//googleblogs/pdfs/google_predicting_the_present.pdf">close enough</a> to sales data that we can use it as a rough proxy - with a few exceptions. Obviously sometimes interest in a company means something quite different than sales - just think of all of the <a href="http://blog.stockal.com/wp-content/uploads/2017/09/Equifax-Google-Trends.png">equifax</a> searches that have occurred in the past few weeks.</p>
+<div id="jags-or-stan" class="section level3">
+<h3>JAGS or STAN</h3>
+<p>Since this is a Bayesian approach, I felt that there were two options available: use JAGS or STAN, I went with JAGS for no particular reason other than being slightly more familiar with the syntax and feeling that it may be a better beginner language for those without much Bayesian computing experience. Those without JAGS experience are more than welcome to follow along, but might want to check out <a href="https://faculty.washington.edu/jmiyamot/p548/karreth%20jags%20&amp;%20r2jags%20tutorial.pdf">this</a> to learn more!</p>
+</div>
+<div id="step-1-getting-data-yes-guac-please" class="section level2">
+<h2>Step 1: Getting data (yes, guac please)</h2>
+<p>First we will grab some chipotle data using the really nice gtrendsR R package. There are a few parameters to pay attention to here, so don’t be afraid to look them up! Of particular interest to us is the keyword (chipotle), the region (USA), time span (note: Google rewards shorter time spans with higher resolution data - good to keep in mind; we will be using 5 years), and category (Food &amp; Drink). Here we are searching for just the name of the restaurant.</p>
+<pre class="r"><code>library(gtrendsR)
+chipotle_gtrends &lt;- gtrends(keyword = &quot;chipotle&quot;,
+                geo = &quot;US&quot;,
+                time = &quot;all&quot;,
+                category = 71)</code></pre>
+<p>gtrends returns a lot of information, maybe even too much for us:</p>
+<pre class="r"><code>str(chipotle_gtrends)</code></pre>
+<pre><code>## List of 6
+##  $ interest_over_time:&#39;data.frame&#39;:  166 obs. of  6 variables:
+##   ..$ date    : Date[1:166], format: &quot;2004-01-01&quot; ...
+##   ..$ hits    : int [1:166] 11 12 12 11 12 14 15 14 13 13 ...
+##   ..$ keyword : chr [1:166] &quot;chipotle&quot; &quot;chipotle&quot; &quot;chipotle&quot; &quot;chipotle&quot; ...
+##   ..$ geo     : chr [1:166] &quot;US&quot; &quot;US&quot; &quot;US&quot; &quot;US&quot; ...
+##   ..$ gprop   : chr [1:166] &quot;web&quot; &quot;web&quot; &quot;web&quot; &quot;web&quot; ...
+##   ..$ category: int [1:166] 71 71 71 71 71 71 71 71 71 71 ...
+##  $ interest_by_region:&#39;data.frame&#39;:  51 obs. of  5 variables:
+##   ..$ location: chr [1:51] &quot;Ohio&quot; &quot;District of Columbia&quot; &quot;Maryland&quot; &quot;Minnesota&quot; ...
+##   ..$ hits    : int [1:51] 100 91 87 80 66 65 63 61 53 52 ...
+##   ..$ keyword : chr [1:51] &quot;chipotle&quot; &quot;chipotle&quot; &quot;chipotle&quot; &quot;chipotle&quot; ...
+##   ..$ geo     : chr [1:51] &quot;US&quot; &quot;US&quot; &quot;US&quot; &quot;US&quot; ...
+##   ..$ gprop   : chr [1:51] &quot;web&quot; &quot;web&quot; &quot;web&quot; &quot;web&quot; ...
+##  $ interest_by_dma   :&#39;data.frame&#39;:  206 obs. of  5 variables:
+##   ..$ location: chr [1:206] &quot;Columbus OH&quot; &quot;Cincinnati OH&quot; &quot;Cleveland-Akron (Canton) OH&quot; &quot;Minneapolis-St. Paul MN&quot; ...
+##   ..$ hits    : int [1:206] 100 99 97 76 73 73 71 68 65 64 ...
+##   ..$ keyword : chr [1:206] &quot;chipotle&quot; &quot;chipotle&quot; &quot;chipotle&quot; &quot;chipotle&quot; ...
+##   ..$ geo     : chr [1:206] &quot;US&quot; &quot;US&quot; &quot;US&quot; &quot;US&quot; ...
+##   ..$ gprop   : chr [1:206] &quot;web&quot; &quot;web&quot; &quot;web&quot; &quot;web&quot; ...
+##  $ interest_by_city  :&#39;data.frame&#39;:  50 obs. of  5 variables:
+##   ..$ location: chr [1:50] &quot;Columbus&quot; &quot;Overland Park&quot; &quot;Alexandria&quot; &quot;Cincinnati&quot; ...
+##   ..$ hits    : int [1:50] 100 95 93 88 80 76 73 72 71 71 ...
+##   ..$ keyword : chr [1:50] &quot;chipotle&quot; &quot;chipotle&quot; &quot;chipotle&quot; &quot;chipotle&quot; ...
+##   ..$ geo     : chr [1:50] &quot;US&quot; &quot;US&quot; &quot;US&quot; &quot;US&quot; ...
+##   ..$ gprop   : chr [1:50] &quot;web&quot; &quot;web&quot; &quot;web&quot; &quot;web&quot; ...
+##  $ related_topics    :&#39;data.frame&#39;:  16 obs. of  6 variables:
+##   ..$ subject       : chr [1:16] &quot;100&quot; &quot;10&quot; &quot;5&quot; &quot;0&quot; ...
+##   ..$ related_topics: chr [1:16] &quot;top&quot; &quot;top&quot; &quot;top&quot; &quot;top&quot; ...
+##   ..$ value         : chr [1:16] &quot;Chipotle Mexican Grill&quot; &quot;Chipotle&quot; &quot;Burrito&quot; &quot;Adobo&quot; ...
+##   ..$ geo           : chr [1:16] &quot;US&quot; &quot;US&quot; &quot;US&quot; &quot;US&quot; ...
+##   ..$ keyword       : chr [1:16] &quot;chipotle&quot; &quot;chipotle&quot; &quot;chipotle&quot; &quot;chipotle&quot; ...
+##   ..$ category      : int [1:16] 71 71 71 71 71 71 71 71 71 71 ...
+##  $ related_queries   :&#39;data.frame&#39;:  50 obs. of  6 variables:
+##   ..$ subject        : chr [1:50] &quot;100&quot; &quot;40&quot; &quot;40&quot; &quot;35&quot; ...
+##   ..$ related_queries: chr [1:50] &quot;top&quot; &quot;top&quot; &quot;top&quot; &quot;top&quot; ...
+##   ..$ value          : chr [1:50] &quot;chipotle menu&quot; &quot;chipotle recipe&quot; &quot;chipotle near me&quot; &quot;nutrition chipotle&quot; ...
+##   ..$ geo            : chr [1:50] &quot;US&quot; &quot;US&quot; &quot;US&quot; &quot;US&quot; ...
+##   ..$ keyword        : chr [1:50] &quot;chipotle&quot; &quot;chipotle&quot; &quot;chipotle&quot; &quot;chipotle&quot; ...
+##   ..$ category       : int [1:50] 71 71 71 71 71 71 71 71 71 71 ...
+##  - attr(*, &quot;class&quot;)= chr [1:2] &quot;gtrends&quot; &quot;list&quot;</code></pre>
+<p>So we can go ahead an remove what we want: total interest and time (although a more in-depth analysis could definitely use the extra information) which is contained as a <code>data.frame</code> in the <code>interest_over_time</code> portion of the list which we will extract.</p>
+<pre class="r"><code>chip_dat &lt;- chipotle_gtrends$interest_over_time</code></pre>
+<p>Let’s see what we have here:</p>
+<pre class="r"><code>plot(chip_dat$date, chip_dat$hits, type = &quot;l&quot;, lwd = 4,
+     main = &quot;Google trends: Chipotle Resturants&quot;,
+     ylab = &quot;Hits&quot;, xlab = &quot;Date&quot;,  cex.lab = 1.3,
+     cex.main = 1.4, cex.axis = 1.3)</code></pre>
+<p><img src="/post/2017-09-15-forecasting-chipotle_files/figure-html/plotting_chipotle_data-1.png" width="672" /></p>
+<p>Whoa! Looks good!</p>
+<p>As always, when conducting an analysis, we want to make sure any assumptions are sufficiently met. With some time series analyses, data must be <a href="http://www.itl.nist.gov/div898/handbook/pmc/section4/pmc442.htm"><em>stationary</em></a>, defined as mean, variance, and autocorrelation remaining constant over time. A quick way of (usually) achieving this is by examining differences.</p>
+<pre class="r"><code>library(dplyr)
+hits_dif &lt;- diff(chip_dat$hits)
+date_dif &lt;- chip_dat$date[-1]</code></pre>
+<pre class="r"><code>plot(date_dif, hits_dif, type = &quot;l&quot;, lwd = 3,
+     main = &quot;Google trends: Chipotle Resturants - First Diff&quot;,
+     ylab = &quot;Hits (diff)&quot;, xlab = &quot;Date &quot;,  cex.lab = 1.3,
+     cex.main = 1.4, cex.axis = 1.3)</code></pre>
+<p><img src="/post/2017-09-15-forecasting-chipotle_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p>So we notice that the mean hovers around zero in the first difference which is good, although the variance is clearly not stable. That is ‘OK-enough’ for this small example, but the problem could be possibly be alleviated by taking the second difference, or using another method of standardization, each of which has its own set of issues.</p>
+</div>
+<div id="intercept-model" class="section level2">
+<h2>Intercept Model</h2>
+<p>Now that we have our differenced data lets look at a very simple model - the intercept model - by which the first difference is modeled as a function of only a constant term (<span class="math inline">\(\mu\)</span>) and an error term (<span class="math inline">\(\epsilon\)</span>)</p>
+<p><span class="math inline">\(y_t = \mu + \epsilon_t\)</span></p>
+<p>Note: Perhaps now it is clear why we need stationary data, the intercept only model could not capture a moving mean, but rather only a constant mean with constant variance.</p>
+<p>Lets load some important packages we will be using</p>
+<pre class="r"><code>library(R2jags)     # for using JAGS in R
+library(jagstools)  # Some additional JAGS tools
+library(knitr)      # I love the kable function 
+library(coda)       # </code></pre>
+<p>Now, lets define our model (<span class="math inline">\(y_t = \mu + \epsilon_t\)</span>) in JAGS.</p>
+<pre class="r"><code>model.1 &lt;- function() {
+        # priors on parameters
+        
+        # mean ~ normal: mean = 0, sd = 1/sqrt(0.01)
+        mu ~ dnorm(0, 0.01); 
+        
+        # tau ~ inverse gamma: alpha, beta = 0.001 
+        tau.obs ~ dgamma(0.001,0.001); 
+        
+        # sd is treated as derived parameter
+        sd.obs &lt;- 1/sqrt(tau.obs); 
+        
+        for(i in 1:N) {
+                Y[i] ~ dnorm(mu, tau.obs);
+        }
+}</code></pre>
+<p>Now we can define our data, parameters, and run the model.</p>
+<pre class="r"><code>set.seed(100)
+N = length(hits_dif)
+
+jags.data = list(&quot;Y&quot;=hits_dif,&quot;N&quot;=N) # named list of inputs
+
+jags.params=c(&quot;sd.obs&quot;,&quot;mu&quot;) # parameters to be monitored
+
+mod_lm_intercept = jags(jags.data, parameters.to.save=jags.params,
+                        model.file=model.1, n.chains = 3, n.burnin=5000,
+                        n.thin=1, n.iter=10000, DIC=TRUE)        </code></pre>
+<pre><code>## module glm loaded</code></pre>
+<pre><code>## Compiling model graph
+##    Resolving undeclared variables
+##    Allocating nodes
+## Graph information:
+##    Observed stochastic nodes: 165
+##    Unobserved stochastic nodes: 2
+##    Total graph size: 176
+## 
+## Initializing model</code></pre>
+<p>Great! Now lets investigate some of the results. Primarily, what values are plausible for <span class="math inline">\(\mu\)</span> and what sort of variability we have.</p>
+<pre class="r"><code>par(mfrow = c(2,1))
+
+hist(mod_lm_intercept$BUGSoutput$sims.matrix[,2],
+     40,col=&quot;grey&quot;,
+     xlab=&quot;Mean&quot;,
+     main=&quot;&quot;)
+
+hist(mod_lm_intercept$BUGSoutput$sims.matrix[,3],
+     40,col=&quot;grey&quot;,xlab=expression(sigma[obs]),main=&quot;&quot;)</code></pre>
+<p><img src="/post/2017-09-15-forecasting-chipotle_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p>Below is a function I stole from the <a href="https://www.jhsph.edu/courses/course/24514/2017/140.652.01/methods-in-biostatistics-ii">Bayesian Methods II</a> course at the <a href="https://www.jhsph.edu/">JHUSPH</a> which allows us to produce some informative plots about our MCMC. Without getting too detailed, these plots can illustrate plausible values of our parameters as well as provide some insight into whether or not our model has converged.</p>
+<pre class="r"><code>createMcmcList = function(jagsmodel){
+        McmcArray = as.array(jagsmodel$BUGSoutput$sims.array)
+        McmcList = vector(&quot;list&quot;,length=dim(McmcArray)[2])
+        for(i in 1:length(McmcList)) McmcList[[i]] = as.mcmc(McmcArray[,i,])
+        McmcList = mcmc.list(McmcList)
+        return(McmcList)
+}
+myList = createMcmcList(mod_lm_intercept)
+plot(myList[[1]])</code></pre>
+<p><img src="/post/2017-09-15-forecasting-chipotle_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>We wont spend too much time on these results, because this extremely simple model may be too difficult to draw informative inference from. So, we will examine a slightly more complex model next.</p>
+</div>
+<div id="autocorelated-error-model" class="section level2">
+<h2>Autocorelated Error Model</h2>
+<p>Here we will try a similar model, but allow for non-independence of errors. More specifically, we allow the deviation from the mean <span class="math inline">\(\mu\)</span> to be a function of the previous deviation <span class="math inline">\(e_{t-1}\)</span> scaled by a parameter to be estimated, <span class="math inline">\(\phi\)</span>.</p>
+<p><span class="math inline">\(E(y_t) = \mu + \phi * e_{t-1}\)</span></p>
+<p>We can enter this into jags as so:</p>
+<pre class="r"><code>ar.model &lt;- function(){
+                # priors on parameters
+                # very diffuse
+                mu ~ dnorm(0, 0.01)
+                tau.obs ~ dgamma(0.001,0.001)
+                sd.obs &lt;- 1/sqrt(tau.obs)
+                phi ~ dunif(-1,1) # autocorrelation must be between -1,1
+                tau.cor &lt;- tau.obs * (1-phi*phi) # Var = sigma2 * (1-rho^2)
+                epsilon[1] &lt;- Y[1] - mu
+                predY[1] &lt;- mu # initial value
+                
+                # skipping first value (it doesnt have a difference)
+                for(i in 2:N) {
+                        predY[i] &lt;- mu + phi * epsilon[i-1];
+                        Y[i] ~ dnorm(predY[i], tau.cor);
+                        epsilon[i] &lt;- (Y[i] - mu) - phi*epsilon[i-1];
+                } 
+}
+
+ar.data = list(&quot;Y&quot;=hits_dif,&quot;N&quot;=N)
+ar.params=c(&quot;sd.obs&quot;,&quot;predY&quot;,&quot;mu&quot;,&quot;phi&quot;)
+mod_lmcor_intercept = jags(ar.data, 
+                           parameters.to.save=ar.params,
+                           model.file=ar.model, 
+                           n.chains = 3, 
+                           n.burnin=5000,
+                           n.thin=1, 
+                           n.iter=10000, 
+                           DIC=TRUE)</code></pre>
+<pre><code>## Compiling model graph
+##    Resolving undeclared variables
+##    Allocating nodes
+## Graph information:
+##    Observed stochastic nodes: 164
+##    Unobserved stochastic nodes: 3
+##    Total graph size: 707
+## 
+## Initializing model</code></pre>
+<p>I’m going to define a quick function for plotting confidence bands around the model as well as the actual observed values.</p>
+<pre class="r"><code>plotModelOutput = function(jagsmodel, Y) {
+        # attach the model
+        attach.jags(jagsmodel)
+        x = seq(1,length(Y))
+        summaryPredictions = cbind(apply(predY, 2, quantile, 0.025), 
+                                   apply(predY, 2, mean), 
+                                   apply(predY, 2, quantile, 0.975))
+        plot(Y, pch = 21, col=&quot;steelblue&quot;, 
+             ylim = c(min( c(Y, summaryPredictions)), 
+                      max( c(Y, summaryPredictions))), 
+             xlab=&quot;&quot;,
+             ylab=&quot;95% CIs of predictions and data&quot;,
+             main=&quot;JAGS results:&quot;)
+        polygon(c(x,rev(x)), c(summaryPredictions[,1], 
+                               rev(summaryPredictions[,3])), 
+                col=&quot;grey70&quot;,border=NA)
+        lines(summaryPredictions[,2])
+        points(Y)
+}
+par(mfrow = c(1,1))</code></pre>
+<div id="autocorrelated-errors-results" class="section level4">
+<h4>Autocorrelated Errors Results:</h4>
+<p><img src="/post/2017-09-15-forecasting-chipotle_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p>Here we see a graphical representation of model fit. The solid line indicates the median posterior draw, while the grey band shows the 95% credible interval at each time point. The points shown are the observed data points. Clearly, the model it too simple to capture the variability in the first difference.</p>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th align="right">mean</th>
+<th align="right">sd</th>
+<th align="right">2.5%</th>
+<th align="right">25%</th>
+<th align="right">50%</th>
+<th align="right">75%</th>
+<th align="right">97.5%</th>
+<th align="right">Rhat</th>
+<th align="right">n.eff</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>mu</td>
+<td align="right">0.39</td>
+<td align="right">0.21</td>
+<td align="right">-0.04</td>
+<td align="right">0.25</td>
+<td align="right">0.39</td>
+<td align="right">0.52</td>
+<td align="right">0.81</td>
+<td align="right">1</td>
+<td align="right">13000</td>
+</tr>
+<tr class="even">
+<td>phi</td>
+<td align="right">-0.46</td>
+<td align="right">0.07</td>
+<td align="right">-0.59</td>
+<td align="right">-0.51</td>
+<td align="right">-0.46</td>
+<td align="right">-0.41</td>
+<td align="right">-0.30</td>
+<td align="right">1</td>
+<td align="right">15000</td>
+</tr>
+</tbody>
+</table>
+<p>We see that the median estimate of <span class="math inline">\(\mu\)</span> is 0.41 which makes sense. The ‘true’ data is increasing (as we previously saw) so the difference must have a positive mean. What is interesting is the estimates for the <span class="math inline">\(\phi\)</span> estimate (median: -0.47, 95% Credible Interval: -0.61, -0.32). This suggests when we experience a deviation above the mean difference, we are likely to experience a following deviation below the mean difference.</p>
+<p>While potentially marginally insightful we will move on to one of the most utilized time series models of all time.</p>
+</div>
+</div>
+<div id="autoregressive-model-aka-ar1" class="section level2">
+<h2>Autoregressive Model AKA AR(1)</h2>
+<p>The <a href="https://onlinecourses.science.psu.edu/stat501/node/358">auto regressive model</a> is a classic <a href="https://en.wikipedia.org/wiki/Time_series">time series model</a> by which the models current value is a function of its previous value(s). The AR(1) model takes only into account the previous time’s value to model the current (or future) value.</p>
+<p>Autoregressive (first order) model:</p>
+<p><span class="math inline">\(E(y_t) = \mu + y_{t-1} \phi + e_{t}\)</span></p>
+<p>Note: AR(k) models don’t necessarily need to be stationary, making this a great fit for some real world data with non-constant mean.</p>
+<p>We can specify this in JAGS as such:</p>
+<pre class="r"><code>ar1.model &lt;- function(){
+                mu ~ dnorm(0, 0.01);
+                tau.pro ~ dgamma(0.001,0.001);
+                sd.pro &lt;- 1/sqrt(tau.pro);
+                phi ~ dnorm(0, 1);
+                predY[1] &lt;- Y[1];
+                for(i in 2:N) {
+                        predY[i] &lt;- mu + phi * Y[i-1];
+                        Y[i] ~ dnorm(predY[i], tau.pro);
+                }
+}
+ar1.data = list(&quot;Y&quot;=chip_dat$hits,&quot;N&quot;=(N+1)) # n+1 because 
+                                        # the difference scores
+                                        # have one less element
+ar1.params=c(&quot;sd.pro&quot;,&quot;predY&quot;,&quot;mu&quot;,&quot;phi&quot;)
+ar1.mcmc = jags(ar1.data, parameters.to.save=ar1.params,
+                model.file=ar1.model, 
+                n.chains = 3, 
+                n.burnin=5000, n.thin=1,
+                n.iter=10000, DIC=TRUE)</code></pre>
+<pre><code>## Compiling model graph
+##    Resolving undeclared variables
+##    Allocating nodes
+## Graph information:
+##    Observed stochastic nodes: 165
+##    Unobserved stochastic nodes: 3
+##    Total graph size: 310
+## 
+## Initializing model</code></pre>
+<div id="ar1-results" class="section level4">
+<h4>AR(1) Results</h4>
+<p>Lets checkout the plot:</p>
+<p><img src="/post/2017-09-15-forecasting-chipotle_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p>Now what are the estimates for our parameters?</p>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th align="right">mean</th>
+<th align="right">sd</th>
+<th align="right">2.5%</th>
+<th align="right">25%</th>
+<th align="right">50%</th>
+<th align="right">75%</th>
+<th align="right">97.5%</th>
+<th align="right">Rhat</th>
+<th align="right">n.eff</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>mu</td>
+<td align="right">1.37</td>
+<td align="right">0.82</td>
+<td align="right">-0.24</td>
+<td align="right">0.82</td>
+<td align="right">1.37</td>
+<td align="right">1.92</td>
+<td align="right">2.96</td>
+<td align="right">1</td>
+<td align="right">15000</td>
+</tr>
+<tr class="even">
+<td>phi</td>
+<td align="right">0.98</td>
+<td align="right">0.02</td>
+<td align="right">0.94</td>
+<td align="right">0.97</td>
+<td align="right">0.98</td>
+<td align="right">0.99</td>
+<td align="right">1.01</td>
+<td align="right">1</td>
+<td align="right">10000</td>
+</tr>
+</tbody>
+</table>
+<p>A natural extension of this model is the second degree autoregressive model - AR(2) which incorporates each elements previous two measurements, specified as such <span class="math inline">\(E(y_t) = \mu + y_{t-1} \phi_1 + y_{t-2} \phi_2 + e_{t}\)</span></p>
+<p>So now that we’ve fit several models, we can compare them based on <a href="http://onlinelibrary.wiley.com/store/10.1111/rssb.12062/asset/rssb12062.pdf;jsessionid=9C96A4775F4D8A3F1CDBE8D1ADB2E716.f01t04?v=1&amp;t=j83ig6zf&amp;s=a3bdfc12bcef5fb3c9973d09b78c85863b986632&amp;systemMessage=Wiley+Online+Library+will+be+unavailable+on+Saturday+7th+Oct+from+03.00+EDT+%2F+08%3A00+BST+%2F+12%3A30+IST+%2F+15.00+SGT+to+08.00+EDT+%2F+13.00+BST+%2F+17%3A30+IST+%2F+20.00+SGT+and+Sunday+8th+Oct+from+03.00+EDT+%2F+08%3A00+BST+%2F+12%3A30+IST+%2F+15.00+SGT+to+06.00+EDT+%2F+11.00+BST+%2F+15%3A30+IST+%2F+18.00+SGT+for+essential+maintenance.+Apologies+for+the+inconvenience+caused+.">deviance information criterion (DIC)</a>.</p>
+<p>The intercept model produced a DIC of 1022.6, while the autocorrelated error model and AR(1) produced DIC measures of 986.3 and 1054.4 respectively. An AR(2) model was also fit with a DIC greater than the AR(1). At first glance this may be surprising since a low DIC suggests a greater fit, we might be tempted to say that the autocorrelated error term has the greatest fit of all the models, however, the data utilized is not the same, and thus these models should not be compared based on DIC alone. After examining several other metrics into account, and taking into consideration the interpretability of each model, the AR(1) model is most appropriate, and we will use it to forecast interest in chipotle.</p>
+<p>(Note: If we were to use the difference data for all models, the AR(1) would show a much lower DIC than any of the other models)</p>
+</div>
+</div>
+<div id="forecasting-chipotle-sales" class="section level2">
+<h2>Forecasting Chipotle Sales</h2>
+<p>Predictions in JAGS are fairly easy, in the data we provide JAGS, we simply specify ‘future’ values as ‘NA’, and JAGS predicts them for us by continuing the MCMC chain. We can take these thousands of estimates and generate credible intervals and median estimates.</p>
+<pre class="r"><code>ar1.data.20 = list(&quot;Y&quot;=c(chip_dat$hits,rep(NA,20)),&quot;N&quot;=N+20)
+ar1.mcmc.20 = jags(ar1.data.20, parameters.to.save=ar1.params,
+                  model.file=ar1.model, n.chains = 3, n.burnin=5000, n.thin=1,
+                  n.iter=10000, DIC=TRUE)</code></pre>
+<pre><code>## Compiling model graph
+##    Resolving undeclared variables
+##    Allocating nodes
+## Graph information:
+##    Observed stochastic nodes: 165
+##    Unobserved stochastic nodes: 22
+##    Total graph size: 365
+## 
+## Initializing model</code></pre>
+<p>Now, lets see what this looks like.</p>
+<p><img src="/post/2017-09-15-forecasting-chipotle_files/figure-html/forecastplot-1.png" width="672" /></p>
+<p>Our AR(1) model is predicting a decrease in chipotle interest in the coming 20 days - Let’s see if this holds!</p>
+<div id="whats-next" class="section level3">
+<h3>What’s next?</h3>
+<p>While this was a lot of fun, there are much better models we can and should be using (some of which just simply didn’t make it to this post). Primarily moving average (MA), auto regressive integrated moving average (ARIMA), and state space models which are common to model real world data. In addition, it would be great to include covariates such as wages, sentiment analyses, and food prices, include seasonality, and incorporate hierarchical aspect given that we can extract location data as well.</p>
+<p>In the meantime, lets see how well this model performs.</p>
+<p>Feel free to comment or email with any questions!</p>
+</div>
+<div id="useful-links-resources-used" class="section level3">
+<h3>Useful links / Resources used</h3>
+<ul>
+<li>Anglim, Jeromy. Rjags, and Bayesian Modelling. <a href="http://jeromyanglim.blogspot.com/2012/04/getting-started-with-jags-rjags-and.html" class="uri">http://jeromyanglim.blogspot.com/2012/04/getting-started-with-jags-rjags-and.html</a></li>
+<li>Hamilton, J. D. (1994). Time series analysis (Vol. 2). Princeton: Princeton university press.</li>
+<li>Holmes, Elizabeth. (2017). Introduction to Bayesian Time-Series Analysis using JAGS, University of Wisconson</li>
+<li>Metcalfe, A. V., &amp; Cowpertwait, P. S. (2009). Introductory time series with R.</li>
+</ul>
+</div>
+</div>
+
+    </div>
+  </article>
+
+  
+
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/images/hugo-logo.png" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+    
+
+
+
+<script src="//cdn.bootcss.com/highlight.js/9.11.0/highlight.min.js"></script>
+
+
+
+<script src="//cdn.bootcss.com/highlight.js/9.11.0/languages/r.min.js"></script>
+<script src="//cdn.bootcss.com/highlight.js/9.11.0/languages/yaml.min.js"></script>
+<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
+
+
+
+    
+<script src="/js/math-code.js"></script>
+<script async src="//cdn.bootcss.com/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+
+    
+  </body>
+</html>
+

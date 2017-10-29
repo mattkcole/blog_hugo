@@ -1,0 +1,182 @@
+---
+title: 'The Problem With Backward Selection'
+subtitle: 'How an intuitive method inflates Type 1 error rates and can bias results'
+author: "Matt Cole"
+date: 2017-01-22
+tags: ['R', 'statistics', 'backward-selection']
+output:
+  html_document:
+    keep_md: true
+---
+
+
+
+<p>Q: What does modeling the number of people buying gelato in Venice using cultural data and <a href="http://dati.venezia.it/">environmental attributes</a> have in common with assessing which measures of reading speed are most related to glaucoma propensity?</p>
+<p>A: A strong need for variable selection.</p>
+<p>Whenever we consider estimating the relationship between two variables, say <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span>, we need to contemplate what other factors may be associated with those of interest and whether or not to include them in our model. In addition, sometimes, we may have many variables at our disposal, and need to narrow down which ones provide substantial relevant information in order explain the data in a simple way, avoid overfitting, or reduce costs [in terms of both data collection and, potentially storing/analyzing]. This problem of covariate selection can be tough - how can we include relevant and otherwise important variables in our models while excluding those with unsubstantial or happenstantial relationships? Here, we will look at a common mistake - the use of step-wise-backward selection in regression analysis.</p>
+<p>Suppose we have data concerning <span class="math inline">\(y\)</span> and a handful of predictors, <span class="math inline">\(x_i\)</span>’s. Say we are interested in assessing the relationship between these variables, <span class="math inline">\(x_i\)</span> and <span class="math inline">\(y\)</span>, but aren’t sure which variables to include. Backward selection is sometimes employed to isolate only the relevant variables by removing seemingly irrelevant covariates in a one-at-a-time process. The general protocol is to fit a ‘full model’ using all available covariates (all <span class="math inline">\(x_i\)</span>’s), and then remove the <span class="math inline">\(x_i\)</span> with the weakest relationship one at a time until some stopping criteria is reached:</p>
+<div id="backward-step-wise-selectionelimination-algorithm-linear-regression-case" class="section level3">
+<h3>Backward Step-wise selection/elimination algorithm [linear regression case]</h3>
+<ol style="list-style-type: decimal">
+<li>Fit a full model using all <span class="math inline">\(N\)</span> <span class="math inline">\(x_i\)</span>’s
+<ul>
+<li><span class="math inline">\(\hat{y} = \beta_0 + \beta_1 x_1 + ... + \beta_N x_N\)</span></li>
+</ul></li>
+<li>Remove <span class="math inline">\(x_i\)</span> with the weakest relationship and refit the model.
+<ul>
+<li>Usually the least significant variable, if one exists, is dropped, and the model refit.</li>
+<li><span class="math inline">\(\hat{y} = \beta_0 + \beta_1 x_1 + \beta_{i-1} x_{i-1} + \beta_{i+1} x_{i+1} + ... + \beta_N x_N\)</span></li>
+</ul></li>
+<li>Repeat 2 until a stopping criteria is reached.
+<ul>
+<li>Could be when all remaining coefficient p-values are less than the predefined <span class="math inline">\(\alpha\)</span> value [say, 0.05], or there is only one coefficient remaining.</li>
+</ul></li>
+</ol>
+</div>
+<div id="p-values-and-their-properties" class="section level2">
+<h2>P-values and their properties</h2>
+<p>In order to see and understand why step-wise backward selection may not be an ideal method of covariate selection, we must understand a bit more about p-values. We will accomplish this be examining the distribution of p-values under the null hypothesis where <span class="math inline">\(x\)</span> is independent of <span class="math inline">\(y\)</span>.</p>
+<p>First, let’s set our seed and load some dependencies.</p>
+<pre class="r"><code># R 3.3.2
+library(&quot;dplyr&quot;)
+library(&quot;broom&quot;)
+set.seed(123)</code></pre>
+<p>Let’s say we are interested in understanding the relationship between <span class="math inline">\(x_1\)</span> and <span class="math inline">\(y\)</span>, which under the null hypothesis, <span class="math inline">\(x_1\)</span> and <span class="math inline">\(y\)</span> are independent.</p>
+<p>Under the null, what would be expect?</p>
+<p>Well, lets set our significance/<span class="math inline">\(\alpha\)</span>-level to 0.05. By definition of <span class="math inline">\(\alpha\)</span>-level we know that approximately 5% of our results would be significant despite there being no actual relationship present. Furthermore, because there is no <em>real</em> relationship, we would also expect the resulting p-values to be uniform on (0,1).</p>
+<p>Let’s take a look at 1,000 simulated situations where the linear relationship between <span class="math inline">\(x_1\)</span> and <span class="math inline">\(y\)</span> is compared where both variables are actually independent of one another - I’ll using dplyr for better readability:</p>
+<pre class="r"><code>x &lt;- vector()
+sim1 &lt;- 1000
+# lets run this simulation 10,000 times
+for (i in 1:sim1){
+
+        data_set &lt;- data.frame(rnorm(1000), rnorm(1000))
+
+        colnames(data_set) &lt;- c(&quot;y&quot;,&quot;x&quot;)
+
+        # lets fit our linear model
+        p_val &lt;- lm(y ~ x, data = data_set) %&gt;%
+
+        # then lets extract our &#39;tidy&#39; output
+                broom::tidy() %&gt;%               
+
+        # then we will remove the intercept coefficient
+                dplyr::slice(-1) %&gt;%            
+
+        # then we will select select our p-values
+                dplyr::select(p.value) #%&gt;%
+
+        # storing our generated p-value in a list of p-values
+        x &lt;- append(x, p_val)
+
+}
+
+# storing our list of p-values as a vector for easier plotting etc.
+x &lt;- as.numeric(x)
+
+# looking at our results
+hist(x,
+     col = &quot;steelblue&quot;,
+     main = &quot;Distribution of p-values&quot;,
+     # sub = &quot;test&quot;,
+     xlab = &quot;P-value&quot;,
+     ylab = &quot;Count&quot;)</code></pre>
+<p><img src="/post/2017-01-22-backwards_selection_files/figure-html/pt1-1.png" width="672" /></p>
+<p>Distribution of p-values in our null, simple linear regression case. Note - the distribution of p-values is what we’d expect, seemingly uniform distribution with <span class="math inline">\(49\)</span> [<span class="math inline">\(4.9\)</span> %] of our simulated examples reaching sub-<span class="math inline">\(\alpha\)</span> level significance. The take away here is that the percentage of false positives [our realized type I error rate] is very close to our theoretical estimate of 5%, our <em>A priori</em> Type I error rate - exactly what we would hope.</p>
+<p>Now that we understand some of the behavior of p-values, let’s take a look at backward selection using 2 variables.</p>
+</div>
+<div id="backward-selection" class="section level2">
+<h2>Backward Selection</h2>
+<div id="our-backward-step-wise-selectionelimination-algorithm" class="section level3">
+<h3><em>Our</em> Backward Step-wise selection/elimination algorithm</h3>
+<ol style="list-style-type: decimal">
+<li>Fit a full model using <span class="math inline">\(x_1\)</span> &amp; <span class="math inline">\(x_2\)</span>.
+<ul>
+<li><span class="math inline">\(\hat{y} = \beta_0 + \beta_1 x_1 + \beta_2 x_2\)</span></li>
+</ul></li>
+<li>If at least <span class="math inline">\(\beta_1\)</span> or <span class="math inline">\(\beta_2\)</span> is non significant, remove <span class="math inline">\(x_i\)</span> with the weakest relationship and refit the model otherwise move to 3.
+<ul>
+<li>$ = _0 + _i x_i where _i is more significant and _j is not.</li>
+</ul></li>
+<li>Stop removing covariates when either both <span class="math inline">\(\beta_1\)</span> &amp; <span class="math inline">\(\beta_2\)</span> are significant, or there is only one variable remaining.</li>
+</ol>
+<p>We would expect that, under the null hypothesis: both <span class="math inline">\(x_1\)</span> and <span class="math inline">\(x_2\)</span> are independent of <span class="math inline">\(y\)</span> and <span class="math inline">\(x_1\)</span> and <span class="math inline">\(x_2\)</span> are independent of themselves, there would be:</p>
+<ul>
+<li><span class="math inline">\(0.005^2 \times 1000 =0.025\)</span> simulated runs where both coefficients are significant.</li>
+<li><span class="math inline">\((0.05 + 0.05 - 2 \times 0.05^2) * 10000 = 95\)</span> simulated runs where one coefficient is significant.</li>
+</ul>
+<pre class="r"><code>x2 &lt;- vector()
+
+double_sig &lt;- 0
+
+# lets simulate this situation 10000 times.
+sim2_num &lt;- 1000
+for (i in 1:sim2_num){
+
+        # creating testing data
+        data_set &lt;- data.frame(rnorm(1000),
+                rnorm(1000),
+                rnorm(1000)
+                )
+
+        colnames(data_set) &lt;- c(&quot;y&quot;, &quot;x1&quot;, &quot;x2&quot;)
+
+        #fitting lm
+        p_vals &lt;- lm(y ~ x1 + x2, data = data_set) %&gt;%
+
+        # then obtaining tidy output
+                broom::tidy() %&gt;%  
+
+        # then removing intercept coef        
+                dplyr::slice(-1) %&gt;%            
+
+        # then selecting pvalues
+                dplyr::select(term, p.value)
+
+        # checking stopping criteria
+        # IF both at least one coefficients is not significant
+        # then we remove the coefficient with a higher p-value
+        # and re-run the regression
+
+        if (sum(p_vals$p.value &gt; 0.05) &gt;= 1) {
+                var_keep &lt;- which.min(p_vals$p.value) + 1
+                data_set &lt;- data_set %&gt;%
+                        dplyr::select(c(1,var_keep))
+
+                p_vals &lt;- lm(y ~ ., data = data_set) %&gt;%
+                        broom::tidy() %&gt;%
+                        dplyr::slice(-1) %&gt;%
+                        dplyr::select(p.value) %&gt;%
+                        as.numeric()
+
+                x2 &lt;- append(x2, p_vals)
+
+        # otherwise, we will record that both coefficients were significant
+        } else {
+                double_sig &lt;- double_sig + 1
+        }
+}</code></pre>
+<p>Out of the 1000 simulations, 2 [0.2%] were significant at both coefficients. These results were right on par with our theoretical estimations made prior to the simulation.</p>
+<p>Similarly however, the number of simulations with exactly one coefficient appearing as significant was 115 [11.5%].</p>
+<p>Here lies the important problem:</p>
+<p>If you were to conduct this backward selection in the same way <em>and</em> report one of these regression results, <em>and</em> call all coefficients with a p-value below 0.05 as significant, your true false positive rate would actually be much higher. As we saw in this analysis, despite there being no real relationship between either <span class="math inline">\(x\)</span> or <span class="math inline">\(y\)</span>, we recorded that of the 1000 simulated regressions 998 utilized the backward selection algorithm to drop the least significant coefficient. If a researcher/scientist/statistician reported such a regression, their probability of a type 1 error would be about 11.7%, despite being at an <span class="math inline">\(\alpha\)</span> level of 0.05, suggesting false confidence in the results as an improper . This severe Type I error rate inflation could be dangerous, signaling extraneous relationships as real, and leading researchers in the wrong direction.</p>
+<pre class="r"><code>hist(x2,
+     col = &quot;steelblue&quot;,
+     main = &quot;Distribution of p-values&quot;,
+     xlab = &quot;P-values&quot;)</code></pre>
+<p><img src="/post/2017-01-22-backwards_selection_files/figure-html/looking_at_x2-1.png" width="672" /></p>
+<p>Distribution of p-values excluding the 2 observations where both observations were significant is non-uniform. Clearly we can see very strong skewness towards small p-values despite the absence of any relationship between <span class="math inline">\(x_1\)</span> or <span class="math inline">\(x_2\)</span> and <span class="math inline">\(y\)</span> whatsoever.</p>
+</div>
+</div>
+<div id="other-options-and-takeaways" class="section level2">
+<h2>Other Options and Takeaways</h2>
+<p>As we saw here, even a small alteration to our methodologies can have striking effects on our type I error rates, and in turn our results and interpretations. It is important when doing any sort of selection method to consider how this type I error rate [which is really one of the most important concepts of hypothesis testing] may be changing, and report it. Model and covariate selection are tricky concepts, partly for the same reason outlined above. Even some ‘robust’ methodologies such as the <a href="https://arxiv.org/pdf/0808.0967.pdf">LASSO</a> can be tainted with bias [although in a bit different form]. The best defense to these issues can be to understand what biases <em>may</em> be occurring and accounting for them. For instance, it still may be possible to utilize backward selection by using a p-value correction method.</p>
+<div id="links" class="section level3">
+<h3>Links</h3>
+<ul>
+<li>Ingo’s notes on <a href="http://www.biostat.jhsph.edu/~iruczins/teaching/jf/ch10.pdf">Variable Selection</a></li>
+<li>Problems with the <a href="https://arxiv.org/pdf/0808.0967.pdf">LASSO</a></li>
+<li>This <a href="https://github.com/mattkcole/mattkcole.github.io/blob/master/_rmds/backwards_selection.rmd">analyis</a></li>
+</ul>
+</div>
+</div>

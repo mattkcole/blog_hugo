@@ -1,0 +1,71 @@
+---
+title: 'The seeds of reproducibility - a 2 minute crash course'
+author: 'Matt Cole'
+date: '2017-08-25'
+slug: 'seeds'
+categories: ['R']
+tags: ["reproducibility", "seed"]
+---
+
+While a Teaching Assistant for the 620 [Biostatistics sequence](http://www.jhsph.edu/courses/course/17963/2013/140.623.01/statistical-methods-in-public-health-iii) at JHU (Statistical Methods in Public Health) one issue came up fairly regularly, the idea of seeds and reproducing results when sometimes non-obvious random elements are involved.
+
+Many analyses are dependent on some sort of random number generation, weather it be from cross-validation, bootstrapping, imputing, or simulating, it's inevitable that you'll need these processes. Because of the nature of 'random' things, reproducibility can be tough. How can you reproduce a dice roll of 5? 
+
+R doesn't utilize true random numbers, but rather pseudo random numbers, which are sequences of numbers with properties of truly random number but via a deterministic process. That is, the pseudo random numbers are already determined before we access them. Which 'state' of pseudo random number generation we utilize is determined entirely by this seed.
+
+So when we call a random normal, we cannot reproduce that result easily:
+
+```{r echo = F}
+set.seed(20170707)
+```
+
+#### Simulation 1
+
+```{r}
+rnorm(1)
+```
+
+Now, if we were to re run the simulation, we would get different results:
+
+#### Simulation 2
+
+```{r}
+rnorm(1)
+```
+
+Instead, by calling a seed right before, we can guarantee the same results.
+The way seeds are implemented in statistical packages are a bit different, like so:
+
+ * Python: `import random` and `random.seed(n)`
+ * R: `set.seed(n)`
+ * STATA: `set seed n`
+
+where n is some number (integer) of our choice.
+
+#### Simulation 1A
+
+```{r}
+set.seed(100)
+rnorm(1)
+```
+
+#### Simulation 2A
+
+```{r}
+set.seed(100)
+rnorm(1)
+```
+
+Notice here, we get the same exact result - perfect for reproducibility and consistency. 
+
+There is a ton of information out there on this subject (this was just the crash course I give students). I will attach some links below.
+
+Enjoy!
+
+### Links:
+ * [Pseudorandom number generator](https://en.wikipedia.org/wiki/Pseudorandom_number_generator) (wiki link)
+ * [Pseudorandomness](https://en.wikipedia.org/wiki/Pseudorandomness) (wiki link)
+ * [set.seed help](https://stat.ethz.ch/R-manual/R-devel/library/base/html/Random.html) (R help)
+ * [Random v. Pseudorandom](https://boallen.com/random-numbers.html) (Blog)
+
+

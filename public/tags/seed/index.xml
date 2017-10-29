@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Seed on A Hugo website</title>
+    <link>/tags/seed/</link>
+    <description>Recent content in Seed on A Hugo website</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 25 Aug 2017 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/seed/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>The seeds of reproducibility - a 2 minute crash course</title>
+      <link>/2017/08/25/seeds/</link>
+      <pubDate>Fri, 25 Aug 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/2017/08/25/seeds/</guid>
+      <description>While a Teaching Assistant for the 620 Biostatistics sequence at JHU (Statistical Methods in Public Health) one issue came up fairly regularly, the idea of seeds and reproducing results when sometimes non-obvious random elements are involved.
+Many analyses are dependent on some sort of random number generation, weather it be from cross-validation, bootstrapping, imputing, or simulating, it’s inevitable that you’ll need these processes. Because of the nature of ‘random’ things, reproducibility can be tough.</description>
+    </item>
+    
+  </channel>
+</rss>

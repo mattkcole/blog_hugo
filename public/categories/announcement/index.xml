@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Announcement on A Hugo website</title>
+    <link>/categories/announcement/</link>
+    <description>Recent content in Announcement on A Hugo website</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 21 Jan 2017 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/categories/announcement/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>First post!</title>
+      <link>/2017/01/21/first-post/</link>
+      <pubDate>Sat, 21 Jan 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/2017/01/21/first-post/</guid>
+      <description>After a few Wordpress blogs, a Django experiment and a test of Flask, I&amp;rsquo;ve decided to get my feet wet with Jekyll. Thanks to Dean for the beautiful Jekyll template, beautiful-jekyll, the site is already looking nice. Hope you come along for the ride!</description>
+    </item>
+    
+  </channel>
+</rss>

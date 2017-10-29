@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Packages on A Hugo website</title>
+    <link>/tags/packages/</link>
+    <description>Recent content in Packages on A Hugo website</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 30 Mar 2017 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/packages/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>The Namespace Rabbit Hole</title>
+      <link>/2017/03/30/the-namespace-rabbit-hole/</link>
+      <pubDate>Thu, 30 Mar 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/2017/03/30/the-namespace-rabbit-hole/</guid>
+      <description>I&amp;rsquo;ve been working on an R package for factor analysis visualization for a while now, and ran into an interesting problem. One function in FAtools is essentially a wrapper for several functions in the nFactors package, which plots and displays both graphical and non graphical scree test solutions. It&amp;rsquo;s a handy way for people to look a little more closely at the number of factors to extract (although, I would argue not enough).</description>
+    </item>
+    
+  </channel>
+</rss>

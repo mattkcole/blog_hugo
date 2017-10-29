@@ -1,0 +1,38 @@
+baseurl = "https://mattkcole.github.io/"
+# relativeurls = true
+languageCode = "en-us"
+title = "Data & Science: A blog"
+theme = "hugo-lithium-theme"
+googleAnalytics = "UA-58198392-1"
+disqusShortname = "mattkcole-com"
+publishDir = "../mattkcole.github.io"
+ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
+
+[permalinks]
+    post = "/:year/:month/:day/:slug/"
+
+[[menu.main]]
+    name = "About"
+    url = "/about/"
+[[menu.main]]
+    name = "Twitter"
+    url = "https://twitter.com/mattcol3"
+
+[params]
+    description = "A website built through Hugo and blogdown."
+
+    # options for highlight.js (version, additional languages, and theme)
+    highlightjsVersion = "9.11.0"
+    highlightjsCDN = "//cdn.bootcss.com"
+    highlightjsLang = ["r", "yaml"]
+    highlightjsTheme = "github"
+
+    MathJaxCDN = "//cdn.bootcss.com"
+    MathJaxVersion = "2.7.1"
+
+    [params.logo]
+    url = "avatar-icon.JPG"
+    width = 50
+    height = 50
+    alt = "Logo"
+

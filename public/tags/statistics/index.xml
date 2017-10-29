@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Statistics on A Hugo website</title>
+    <link>/tags/statistics/</link>
+    <description>Recent content in Statistics on A Hugo website</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 22 Jan 2017 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/statistics/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>The Problem With Backward Selection</title>
+      <link>/2017/01/22/the-problem-with-backward-selection/</link>
+      <pubDate>Sun, 22 Jan 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/2017/01/22/the-problem-with-backward-selection/</guid>
+      <description>Q: What does modeling the number of people buying gelato in Venice using cultural data and environmental attributes have in common with assessing which measures of reading speed are most related to glaucoma propensity?
+A: A strong need for variable selection.
+Whenever we consider estimating the relationship between two variables, say \(x\) and \(y\), we need to contemplate what other factors may be associated with those of interest and whether or not to include them in our model.</description>
+    </item>
+    
+  </channel>
+</rss>

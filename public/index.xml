@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>A Hugo website</title>
+    <link>/</link>
+    <description>Recent content on A Hugo website</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 24 Oct 2017 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Importing Functions From Github Into Your Package</title>
+      <link>/2017/10/24/github_packages/</link>
+      <pubDate>Tue, 24 Oct 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/2017/10/24/github_packages/</guid>
+      <description>Since the creation of the devtools package, it’s easier than ever to make and share R packages. This freedom has allowed pacakges to avoid the seemingly archaic process of submitting to CRAN, waiting for feedback, resubmitting… - While in the past, avoiding CRAN meant a significantly reduced audiance for your package, nowadays, easily posting to github means your pacakge is available to nearly every R user via devtools::install_github() not to mention other sources such as bitbucket or svn.</description>
+    </item>
+    
+    <item>
+      <title>Understanding Food Trends: A Baysian Approach to Forecasting Chipotle</title>
+      <link>/2017/09/27/chipotle/</link>
+      <pubDate>Wed, 27 Sep 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/2017/09/27/chipotle/</guid>
+      <description>Since food is such an important aspect of life and public health, I thought it would be exciting to look at food trends over time. Obviously food choices drive public health, but I figured that trends were just this - trends, preferences that may change over time. While a bit broad, I narrowed down ‘food trends’ to be interest in Chipotle Mexican Grill - a fan favorite - over time. Since I don’t readily have any real Chipotle sales data, I decided to make my own - well, kinda.</description>
+    </item>
+    
+    <item>
+      <title>The seeds of reproducibility - a 2 minute crash course</title>
+      <link>/2017/08/25/seeds/</link>
+      <pubDate>Fri, 25 Aug 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/2017/08/25/seeds/</guid>
+      <description>While a Teaching Assistant for the 620 Biostatistics sequence at JHU (Statistical Methods in Public Health) one issue came up fairly regularly, the idea of seeds and reproducing results when sometimes non-obvious random elements are involved.
+Many analyses are dependent on some sort of random number generation, weather it be from cross-validation, bootstrapping, imputing, or simulating, it’s inevitable that you’ll need these processes. Because of the nature of ‘random’ things, reproducibility can be tough.</description>
+    </item>
+    
+    <item>
+      <title>Beyond %&gt;%, Alternative Pipes in R</title>
+      <link>/2017/07/02/pipes/</link>
+      <pubDate>Sun, 02 Jul 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/2017/07/02/pipes/</guid>
+      <description>Data scientists and the Mario Brothers agree - pipes rock.
+If you have been using R for data ‘plumbing’/wrangling etc. you have undoubtedly came across the fantastic dplyr package and then by default, the the standard pipe.
+The pipes we will be discussing today are from the magrittr pacakge, which is where dplyr’s ‘standard’ pipe comes from (repo is here). Straight from the highly recommended magrittr vignette, the purpose of pipes and the magrittr package itself is to “decrease development time and to improve readability and maintainability of code” - who wouldn’t like that?</description>
+    </item>
+    
+    <item>
+      <title>The Namespace Rabbit Hole</title>
+      <link>/2017/03/30/the-namespace-rabbit-hole/</link>
+      <pubDate>Thu, 30 Mar 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/2017/03/30/the-namespace-rabbit-hole/</guid>
+      <description>I&amp;rsquo;ve been working on an R package for factor analysis visualization for a while now, and ran into an interesting problem. One function in FAtools is essentially a wrapper for several functions in the nFactors package, which plots and displays both graphical and non graphical scree test solutions. It&amp;rsquo;s a handy way for people to look a little more closely at the number of factors to extract (although, I would argue not enough).</description>
+    </item>
+    
+    <item>
+      <title>Looking Both Ways - Infix Functions</title>
+      <link>/2017/02/05/looking-both-ways---infix-functions/</link>
+      <pubDate>Sun, 05 Feb 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/2017/02/05/looking-both-ways---infix-functions/</guid>
+      <description>In your R journeys you may have come across some interesting functions like apply statements or even lm. One function that is particularly helpful (and interesting) is the piping operator (%&amp;gt;%) from the magrittr pacakge. You may have noticed that the piping operator is similar to the matrix multiplcation operator %*%, in that they are both sandwitch functions (may or may not be trying to coin this term right now), as the function call is/are a symbol(s) enclosed by a % on both times.</description>
+    </item>
+    
+    <item>
+      <title>The Problem With Backward Selection</title>
+      <link>/2017/01/22/the-problem-with-backward-selection/</link>
+      <pubDate>Sun, 22 Jan 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/2017/01/22/the-problem-with-backward-selection/</guid>
+      <description>Q: What does modeling the number of people buying gelato in Venice using cultural data and environmental attributes have in common with assessing which measures of reading speed are most related to glaucoma propensity?
+A: A strong need for variable selection.
+Whenever we consider estimating the relationship between two variables, say \(x\) and \(y\), we need to contemplate what other factors may be associated with those of interest and whether or not to include them in our model.</description>
+    </item>
+    
+    <item>
+      <title>First post!</title>
+      <link>/2017/01/21/first-post/</link>
+      <pubDate>Sat, 21 Jan 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/2017/01/21/first-post/</guid>
+      <description>After a few Wordpress blogs, a Django experiment and a test of Flask, I&amp;rsquo;ve decided to get my feet wet with Jekyll. Thanks to Dean for the beautiful Jekyll template, beautiful-jekyll, the site is already looking nice. Hope you come along for the ride!</description>
+    </item>
+    
+    <item>
+      <title>A Plain Markdown Post</title>
+      <link>/2016/12/30/a-plain-markdown-post/</link>
+      <pubDate>Fri, 30 Dec 2016 21:49:57 -0700</pubDate>
+      
+      <guid>/2016/12/30/a-plain-markdown-post/</guid>
+      <description>This is a post written in plain Markdown (*.md) instead of R Markdown (*.Rmd). The major differences are:
+ You cannot run any R code in a plain Markdown document, whereas in an R Markdown document, you can embed R code chunks (```{r}); A plain Markdown post is rendered through Blackfriday, and an R Markdown document is compiled by rmarkdown and Pandoc.  There are many differences in syntax between Blackfriday&amp;rsquo;s Markdown and Pandoc&amp;rsquo;s Markdown.</description>
+    </item>
+    
+    <item>
+      <title>About</title>
+      <link>/about/</link>
+      <pubDate>Thu, 05 May 2016 21:48:51 -0700</pubDate>
+      
+      <guid>/about/</guid>
+      <description>Matt is a graduate of the Johns Hopkins School of Public Health biostatistics department and Sacred Heart University&amp;rsquo;s Mathematics and Biological sciences departments.
+He is interested in a bunch of things including tech, sustainability, and bikes.
+If you&amp;rsquo;d like to talk to Matt for fun or because you have a use for him please email him here or reach out on social media - he&amp;rsquo;d love to chat!</description>
+    </item>
+    
+    <item>
+      <title>Hello R Markdown</title>
+      <link>/2015/07/23/hello-r-markdown/</link>
+      <pubDate>Thu, 23 Jul 2015 21:13:14 -0500</pubDate>
+      
+      <guid>/2015/07/23/hello-r-markdown/</guid>
+      <description>R Markdown This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see http://rmarkdown.rstudio.com.
+You can embed an R code chunk like this:
+summary(cars) ## speed dist ## Min. : 4.0 Min. : 2.00 ## 1st Qu.:12.0 1st Qu.: 26.00 ## Median :15.0 Median : 36.00 ## Mean :15.4 Mean : 42.98 ## 3rd Qu.</description>
+    </item>
+    
+    <item>
+      <title>Lorem Ipsum</title>
+      <link>/2015/01/01/lorem-ipsum/</link>
+      <pubDate>Thu, 01 Jan 2015 13:09:13 -0600</pubDate>
+      
+      <guid>/2015/01/01/lorem-ipsum/</guid>
+      <description>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</description>
+    </item>
+    
+  </channel>
+</rss>

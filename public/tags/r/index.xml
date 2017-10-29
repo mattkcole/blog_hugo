@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>R on A Hugo website</title>
+    <link>/tags/r/</link>
+    <description>Recent content in R on A Hugo website</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 24 Oct 2017 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/r/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Importing Functions From Github Into Your Package</title>
+      <link>/2017/10/24/github_packages/</link>
+      <pubDate>Tue, 24 Oct 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/2017/10/24/github_packages/</guid>
+      <description>Since the creation of the devtools package, it’s easier than ever to make and share R packages. This freedom has allowed pacakges to avoid the seemingly archaic process of submitting to CRAN, waiting for feedback, resubmitting… - While in the past, avoiding CRAN meant a significantly reduced audiance for your package, nowadays, easily posting to github means your pacakge is available to nearly every R user via devtools::install_github() not to mention other sources such as bitbucket or svn.</description>
+    </item>
+    
+    <item>
+      <title>Understanding Food Trends: A Baysian Approach to Forecasting Chipotle</title>
+      <link>/2017/09/27/chipotle/</link>
+      <pubDate>Wed, 27 Sep 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/2017/09/27/chipotle/</guid>
+      <description>Since food is such an important aspect of life and public health, I thought it would be exciting to look at food trends over time. Obviously food choices drive public health, but I figured that trends were just this - trends, preferences that may change over time. While a bit broad, I narrowed down ‘food trends’ to be interest in Chipotle Mexican Grill - a fan favorite - over time. Since I don’t readily have any real Chipotle sales data, I decided to make my own - well, kinda.</description>
+    </item>
+    
+    <item>
+      <title>Beyond %&gt;%, Alternative Pipes in R</title>
+      <link>/2017/07/02/pipes/</link>
+      <pubDate>Sun, 02 Jul 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/2017/07/02/pipes/</guid>
+      <description>Data scientists and the Mario Brothers agree - pipes rock.
+If you have been using R for data ‘plumbing’/wrangling etc. you have undoubtedly came across the fantastic dplyr package and then by default, the the standard pipe.
+The pipes we will be discussing today are from the magrittr pacakge, which is where dplyr’s ‘standard’ pipe comes from (repo is here). Straight from the highly recommended magrittr vignette, the purpose of pipes and the magrittr package itself is to “decrease development time and to improve readability and maintainability of code” - who wouldn’t like that?</description>
+    </item>
+    
+    <item>
+      <title>The Namespace Rabbit Hole</title>
+      <link>/2017/03/30/the-namespace-rabbit-hole/</link>
+      <pubDate>Thu, 30 Mar 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/2017/03/30/the-namespace-rabbit-hole/</guid>
+      <description>I&amp;rsquo;ve been working on an R package for factor analysis visualization for a while now, and ran into an interesting problem. One function in FAtools is essentially a wrapper for several functions in the nFactors package, which plots and displays both graphical and non graphical scree test solutions. It&amp;rsquo;s a handy way for people to look a little more closely at the number of factors to extract (although, I would argue not enough).</description>
+    </item>
+    
+    <item>
+      <title>Looking Both Ways - Infix Functions</title>
+      <link>/2017/02/05/looking-both-ways---infix-functions/</link>
+      <pubDate>Sun, 05 Feb 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/2017/02/05/looking-both-ways---infix-functions/</guid>
+      <description>In your R journeys you may have come across some interesting functions like apply statements or even lm. One function that is particularly helpful (and interesting) is the piping operator (%&amp;gt;%) from the magrittr pacakge. You may have noticed that the piping operator is similar to the matrix multiplcation operator %*%, in that they are both sandwitch functions (may or may not be trying to coin this term right now), as the function call is/are a symbol(s) enclosed by a % on both times.</description>
+    </item>
+    
+    <item>
+      <title>The Problem With Backward Selection</title>
+      <link>/2017/01/22/the-problem-with-backward-selection/</link>
+      <pubDate>Sun, 22 Jan 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/2017/01/22/the-problem-with-backward-selection/</guid>
+      <description>Q: What does modeling the number of people buying gelato in Venice using cultural data and environmental attributes have in common with assessing which measures of reading speed are most related to glaucoma propensity?
+A: A strong need for variable selection.
+Whenever we consider estimating the relationship between two variables, say \(x\) and \(y\), we need to contemplate what other factors may be associated with those of interest and whether or not to include them in our model.</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,60 @@
+---
+title: 'Importing Functions From Github Into Your Package'
+author: "Matt Cole"
+date: "2017-10-24"
+slug: 'github_packages'
+categories: ['Software Development']
+tags: ["R packages", "R", "github"]
+---
+
+Since the creation of the `devtools` package, it's easier than ever to make and share R packages. This freedom has allowed pacakges to avoid the seemingly archaic process of submitting to CRAN, waiting for feedback, resubmitting... - While in the past, avoiding CRAN meant a significantly reduced audiance for your package, nowadays, easily posting to github means your pacakge is available to nearly every R user via `devtools::install_github()` not to mention other sources such as bitbucket or svn. 
+
+It is not uncommon to use functions from these non-CRAN packages, and by extension, it is not uncommon to want to use functions from these packages in a package you're trying to create. 
+
+Becuase the standard `Import:` field in the DESCRIPTION file only searchs CRAN for packages, we need to get a little more creative to get a non-CRAN package's function into our own.
+
+## Solution A: Copy the Function Into Our Package
+
+A simple solution can be to just literally copy the package of interest into the new package. This is a very simple solution, but you'd want to check the target package's liscence to make sure this is allowed, be sure to provide proper credit, and probably get the authors blessing. In addition, by doing this you'll missout on any current work on the function which may or may not be helpful.
+
+## Solution B: Import using devtools
+
+Using devtools, we can add a `Remotes:` field to our DESCRIPTION file and import the non-CRAN package. 
+
+In a normal situation, where the package with the function of interest is on CRAN we would have a DESCRIPTION file that would look something like this:
+
+```
+.
+.
+.
+Import:
+    PackageNotOnCRAN
+Suggests:
+    devtools,
+    testthat
+```
+
+
+Instead, a super easy trick is to add a 'remotes' field into our DESCRIPTION file specifying the username/package_name target of our target package. 
+
+
+```
+.
+.
+.
+Remotes:
+    github::User/PackageNotOnCRAN
+Import:
+    PackageNotOnCRAN
+Suggests:
+    devtools,
+    testthat
+```
+
+And thats it, we now will have access to all of the package's functions while constructing our own. Not only will this work very well for files on github (github::), but works for git, bitbucket, local packages and more! Check out the link below.
+
+For more info, check [this](https://cran.r-project.org/web/packages/devtools/vignettes/dependencies.html) out.
+
+A downside of this solution, is if you are trying to submit to CRAN, you must be importing only CRAN packages. 
+
+

@@ -1,0 +1,57 @@
+---
+title: 'The seeds of reproducibility - a 2 minute crash course'
+author: 'Matt Cole'
+date: '2017-08-25'
+slug: 'seeds'
+categories: ['R']
+tags: ["reproducibility", "seed"]
+---
+
+
+
+<p>While a Teaching Assistant for the 620 <a href="http://www.jhsph.edu/courses/course/17963/2013/140.623.01/statistical-methods-in-public-health-iii">Biostatistics sequence</a> at JHU (Statistical Methods in Public Health) one issue came up fairly regularly, the idea of seeds and reproducing results when sometimes non-obvious random elements are involved.</p>
+<p>Many analyses are dependent on some sort of random number generation, weather it be from cross-validation, bootstrapping, imputing, or simulating, it’s inevitable that you’ll need these processes. Because of the nature of ‘random’ things, reproducibility can be tough. How can you reproduce a dice roll of 5?</p>
+<p>R doesn’t utilize true random numbers, but rather pseudo random numbers, which are sequences of numbers with properties of truly random number but via a deterministic process. That is, the pseudo random numbers are already determined before we access them. Which ‘state’ of pseudo random number generation we utilize is determined entirely by this seed.</p>
+<p>So when we call a random normal, we cannot reproduce that result easily:</p>
+<div id="simulation-1" class="section level4">
+<h4>Simulation 1</h4>
+<pre class="r"><code>rnorm(1)</code></pre>
+<pre><code>## [1] -0.06112131</code></pre>
+<p>Now, if we were to re run the simulation, we would get different results:</p>
+</div>
+<div id="simulation-2" class="section level4">
+<h4>Simulation 2</h4>
+<pre class="r"><code>rnorm(1)</code></pre>
+<pre><code>## [1] 1.956813</code></pre>
+<p>Instead, by calling a seed right before, we can guarantee the same results. The way seeds are implemented in statistical packages are a bit different, like so:</p>
+<ul>
+<li>Python: <code>import random</code> and <code>random.seed(n)</code></li>
+<li>R: <code>set.seed(n)</code></li>
+<li>STATA: <code>set seed n</code></li>
+</ul>
+<p>where n is some number (integer) of our choice.</p>
+</div>
+<div id="simulation-1a" class="section level4">
+<h4>Simulation 1A</h4>
+<pre class="r"><code>set.seed(100)
+rnorm(1)</code></pre>
+<pre><code>## [1] -0.5021924</code></pre>
+</div>
+<div id="simulation-2a" class="section level4">
+<h4>Simulation 2A</h4>
+<pre class="r"><code>set.seed(100)
+rnorm(1)</code></pre>
+<pre><code>## [1] -0.5021924</code></pre>
+<p>Notice here, we get the same exact result - perfect for reproducibility and consistency.</p>
+<p>There is a ton of information out there on this subject (this was just the crash course I give students). I will attach some links below.</p>
+<p>Enjoy!</p>
+</div>
+<div id="links" class="section level3">
+<h3>Links:</h3>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Pseudorandom_number_generator">Pseudorandom number generator</a> (wiki link)</li>
+<li><a href="https://en.wikipedia.org/wiki/Pseudorandomness">Pseudorandomness</a> (wiki link)</li>
+<li><a href="https://stat.ethz.ch/R-manual/R-devel/library/base/html/Random.html">set.seed help</a> (R help)</li>
+<li><a href="https://boallen.com/random-numbers.html">Random v. Pseudorandom</a> (Blog)</li>
+</ul>
+</div>

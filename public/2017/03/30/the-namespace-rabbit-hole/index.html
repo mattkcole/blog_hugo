@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.30" />
+
+
+<title>The Namespace Rabbit Hole - A Hugo website</title>
+<meta property="og:title" content="The Namespace Rabbit Hole - A Hugo website">
+
+
+
+  
+
+
+
+
+
+
+
+
+<link href='//cdn.bootcss.com/highlight.js/9.11.0/styles/github.min.css' rel='stylesheet' type='text/css' />
+
+
+
+<link rel="stylesheet" href="/css/fonts.css" media="all">
+<link rel="stylesheet" href="/css/main.css" media="all">
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/" class="nav-logo">
+    <img src="/images/logo.png"
+         width="50"
+         height="50"
+         alt="Logo">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="/about/">About</a></li>
+    
+    <li><a href="https://github.com/rstudio/blogdown">GitHub</a></li>
+    
+    <li><a href="https://twitter.com/rstudio">Twitter</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">5 min read</span>
+    
+
+    <h1 class="article-title">The Namespace Rabbit Hole</h1>
+
+    
+    <span class="article-date">2017/03/30</span>
+    
+
+    <div class="article-content">
+      <p>I&rsquo;ve been working on an <a href="https://github.com/mattkcole/FAtools">R package</a> for factor analysis visualization for a while now, and ran into an interesting problem. One function in <a href="https://github.com/mattkcole/FAtools">FAtools</a> is essentially a wrapper for several functions in the nFactors package, which plots and displays both graphical and non graphical <a href="http://econtent.hogrefe.com/doi/abs/10.1027/1614-2241/a000051?journalCode=med">scree test</a> solutions. It&rsquo;s a handy way for people to look <em>a little</em> more closely at the number of factors to extract (although, I would argue not enough).</p>
+
+<p>My <code>scree_plot</code> function requires two functions from the nFactors package: <code>parallel</code> and <code>nScree</code>. So, using <a href="https://cran.r-project.org/web/packages/roxygen2/vignettes/roxygen2.html">roxygen2</a>, I added the following to my DESCRIPTION file, telling R that the nFactors package would be utilized in FAtools:</p>
+
+<pre><code>Imports:
+    nFactors
+</code></pre>
+
+<p>and the following roxygen2 code above my <code>scree_plot</code> function to tell R that in this function we would be utilizing <code>parallel</code> and <code>nScree</code> from nFactors:</p>
+
+<pre><code>#' @importFrom nFactors parallel nScree
+</code></pre>
+
+<p>I thought to myself - I&rsquo;m all set, I can&rsquo;t wait to share this function! But in a few seconds my package dreams were shattered. While building, I received the following error:</p>
+
+<pre><code>Error: could not find function &quot;mvrnorm&quot;
+</code></pre>
+
+<p>That&rsquo;s weird. <code>mvrnorm</code> is a function from the <code>MASS</code> package which is called by <code>parallel</code>. <code>mvrnorm</code> allows us to simulate random draws from a multivariate normal distribution which <code>parallel</code> requires in order to conduct parallel analysis. Clearly, R was able to see <code>parallel</code>, which was from the nFactors package, but was not able to find a package it relied on - very strange.</p>
+
+<p>After some head scratching, I thought of an easy fix - explicitly import <code>mvrnorm</code>. The following changes were made:</p>
+
+<p>DESCRIPTION:</p>
+
+<pre><code>Imports:
+    MASS,
+    nFactors
+</code></pre>
+
+<p>top of scree_plot.R</p>
+
+<pre><code>#' @importFrom MASS mvrnorm
+#' @importFrom nFactors parallel nScree
+
+</code></pre>
+
+<p>Building.</p>
+
+<p>Building..</p>
+
+<p>Building&hellip;</p>
+
+<p>Boom, same problem again: <code>Error: could not find function &quot;mvrnorm&quot;</code>.</p>
+
+<p>I explicitly called <code>mvrnorm</code> into the namespace yet R couldn&rsquo;t find it? That doesn&rsquo;t seem right at all. I was getting worried when the hackerman inside came out. I added the following line <em>inside</em> my <code>scree_plot</code> function with the hope that by defining <code>mvrnorm</code> within <code>scree_plot</code>, something would catch.</p>
+
+<pre><code>#' ...
+#' @importFrom MASS mvrnorm
+#' @importFrom nFactors parallel nScree
+#' ...
+scree_plot &lt;- function(...){
+        mvrnorm &lt;- MASS::mvrnorm
+        ...
+}
+</code></pre>
+
+<p>then:</p>
+
+<pre><code>Error: could not find function &quot;mvrnorm&quot;
+</code></pre>
+
+<p>&hellip;</p>
+
+<p>Again, disappointment - but also confusion. Phrases like &lsquo;lexical scoping&rsquo; and &lsquo;exporting namespace&rsquo; were swirling around my head as I was trying to figure out what was happening. One last idea I had was to literally call <code>library(MASS)</code> <em>inside</em> my function like so:</p>
+
+<pre><code>scree_plot &lt;- function(...){
+        library(MASS)
+        ...
+}
+</code></pre>
+
+<p>To be honest, I didn&rsquo;t expect this would work, but alas it allowed <code>scree_plot</code> to function as intended. Now there are several reasons why this is a terrible idea. Most importantly, in my own work, I use dplyr&rsquo;s <code>select</code> function, which would now be masked by <code>MASS::select</code>, other people could have even more conflicts because of the now bloated namespace (MASS is not a small package).</p>
+
+<p>It was around this time I tracked down my friend and R package guru <a href="http://seankross.com/">Sean</a> to help me see what was going on. After some digging around, it was discovered that, prior to R Version 2.14.0 (released in 2011), the only way for a package function to incorporate functions from other packages was by &lsquo;depending&rsquo; on them*. Today, the <code>Depends</code> field is typically reserved for R version numbers ie. <code>Depends: R (&gt;= 3.1.0)</code>, which would restrict package use to R version numbers greater than or equal to 3.1.0. Although usually frowned upon, this field can also specify packages (and versions) that are to be essentially loaded concurrently. As Sean discovered, package functions which incorporate another package&rsquo;s function via <em>Depends</em> cannot be incorporated in your packages, or my packages, or anyone else&rsquo;s package without depending on the same package. Because the last update to the nFactors package was also in 2011, we knew the source of our errors, nFactors depends on MASS.</p>
+
+<p>So, in my case, I could not incorporate nFactor&rsquo;s <code>parallel</code> function without specifying: <code>Depends: MASS</code>. This is not ideal for some of the same reasons calling <code>library(MASS)</code> inside of a function is not a good idea. But at the end of the day I have only a few options:</p>
+
+<ul>
+<li>Use <code>Depends: MASS</code> and require all users to have and &lsquo;load&rsquo; MASS when loading FAtools</li>
+<li>Get the maintainers of nFactors to update their code (that has been neglected for six years)</li>
+<li>Build my own versions of relevant nFactor functions like <code>parallel</code></li>
+</ul>
+
+<p>Each of these would solve my problem while potentially creating new ones or redundant work for myself. But, as of now, I plan on doing all of these in that order. Depending on MASS is not ideal, but for now it certainly gets the job done. Emailing the maintainers of nFactors can&rsquo;t hurt, but I&rsquo;m not particularly hopeful someone would be willing and able to make changes to their package after 6 years of dormancy (although I would be willing to help). Lastly, something I will also probably do, is just write my own functions for conducting parallel analysis so I wouldn&rsquo;t need nFactors, possibly even using c++ (<a href="http://www.rcpp.org/">rcpp</a>), which is something I&rsquo;d like to play around with more.</p>
+
+<p>So, what did I learn? Well, a ton of things about R package building, including the many ways (you should be able) to import functions from other packages, best practices, etc. Mainly however, IF you are building a package which draws functions from &lsquo;package A&rsquo; which depends on &lsquo;package B&rsquo;, you <em>MUST</em> <em>depend</em> on &lsquo;package B&rsquo; and <em>import</em> &lsquo;package A&rsquo; (although you could also depend on package A, but that&rsquo;s bad form) to use any functions from &lsquo;Package A&rsquo; that also incorporates &lsquo;package B&rsquo;.</p>
+
+<p>Moral of the story? I&rsquo;m not sure, but beware of incorporating non-maintained packages in your projects (sage advice).</p>
+
+<p>Relevant links:</p>
+
+<ul>
+<li><p>Old package dependency mechanism <a href="http://r-pkgs.had.co.nz/description.html">source</a></p></li>
+
+<li><p>R <a href="http://r-pkgs.had.co.nz/namespace.html">namespaces</a></p></li>
+
+<li><p><a href="https://www.youtube.com/watch?v=fQGbXmkSArs&amp;ab_channel=mrfyote">Hackerman</a></p></li>
+</ul>
+
+    </div>
+  </article>
+
+  
+
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/images/hugo-logo.png" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+    
+
+
+
+<script src="//cdn.bootcss.com/highlight.js/9.11.0/highlight.min.js"></script>
+
+
+
+<script src="//cdn.bootcss.com/highlight.js/9.11.0/languages/r.min.js"></script>
+<script src="//cdn.bootcss.com/highlight.js/9.11.0/languages/yaml.min.js"></script>
+<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
+
+
+
+    
+
+    
+  </body>
+</html>
+
