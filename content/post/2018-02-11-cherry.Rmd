@@ -1,0 +1,30 @@
+---
+title: "Cherry Blossoms"
+author: "Matt Cole"
+date: '2018-02-23'
+output: pdf_document
+slug: cherry
+tags: ['question', 'r']
+categories: ['random_thoughts']
+---
+
+I wonder when the cherry blossoms will strike?
+
+```{r test, warning=FALSE, message=FALSE}
+library(readr)
+library(dplyr)
+library(ggplot2)
+# https://www.epa.gov/sites/production/files/2016-08/cherry-blossoms_fig-1.csv
+
+set.seed(123)
+
+cherry = readr::read_csv('../../data/cherry.csv', skip = 6) 
+
+cherry = cherry %>% rbind(c(2017,84,NA))
+
+cherry %>% ggplot(aes(Year, `Yoshino peak bloom date`)) + 
+        geom_line() + 
+        geom_smooth() +
+        ylab('Yoshino peak bloom date (days after Jan 1)')
+```
+
