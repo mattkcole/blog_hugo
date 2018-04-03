@@ -14,14 +14,20 @@ I wonder when the cherry blossoms will strike?
 library(readr)
 library(dplyr)
 library(ggplot2)
+# getting data from
 # https://www.epa.gov/sites/production/files/2016-08/cherry-blossoms_fig-1.csv
 
+# 
 set.seed(123)
 
 cherry = readr::read_csv('../../data/cherry.csv', skip = 6) 
 
-cherry = cherry %>% rbind(c(2017,84,NA))
+cherry = cherry %>% 
+        # adding the latest year (2017) data
+        rbind(c(2017,84,NA))
+```
 
+```{r message = F}
 cherry %>% ggplot(aes(Year, `Yoshino peak bloom date`)) + 
         geom_line() + 
         geom_smooth() +
