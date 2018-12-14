@@ -1,0 +1,48 @@
+---
+title: Quick and Easy Tips to Present Numeric Data More Clearly in RMarkdown (And In General)
+author: Matt Cole
+date: '2018-12-13'
+slug: easy-tip-to-make-your-r-markdowns-look-better
+categories:
+  - Reporting
+tags:
+  - R
+---
+
+R Markdown is a truly amazing communication tool which allows statisticians, data scientists, and any other data-investigator the ability to integrate beautiful visualizations and Latex-like typesetting with the powerful R language. Despite (or perhaps, because of) its power, it's sometimes easy to overlook some subtle ways to communicate more effectively in formatting, language choice, and data presentation.
+
+One common way I've seen many data scientists miss an opportunity to comminicate more clearly is with respect to the presentation of numeric data. These missteps commonly stem from not rounding properly, implying an incorrect level of precision, or the omission of a thoustands place delineator making it difficult to understand the value presented.
+
+### Problem 1 - Not rounding properly
+
+If you're reading this blog, I have no question you're already aware of this - rounding is powerful. It can implicitly convey additional meaning behind numbers or obfuscate your intention. For example displaying the mean rent for a one bedroom apartment in Cedar Rapids, Iowa as \$612.82523601 is not helpful. Including too many decimal places not only may suggest to some readers a level of precion we don't have ('we know what the rent is down to one-millionth of a cent), it also doesn't make sense given the unit of measure (when have you ever paid rent in less than a cent increment? less than a dollar increment? less than a ten-dollar increment?). At the same time, it wouldn't be helpful to round to the nearest thousand and report the average rent as \$1,000, in this case we are simply accidentally misreporting (or worse) this measure.
+
+In short, round responsibly, nobody wants to see your raw unfiltered numbers.
+
+#### How to deal with this in R/RMarkdown
+
+```{r}
+x = 612.82523601
+cat("We found the mean rent in Cedar Rapids, Iowa to be $", round(x), sep = "")
+```
+
+### Problem 2 - Not including thoustands place delineator
+
+Even when we are rounding, our numberic data is not necesarilly comminicating well. A common issue I've seen is lack of thoustands place delineators. When looking at many large (larger than 1,000) numbers, this delineator becomes incredibly important to quickly interpret the digits, especailly when in the context of other numberics which may be of different lengths.
+
+#### In R
+
+Recently, I came across the base R function `prettyNum` which has some really cool functionaluty. It can control significant digits, numeric width, and all sorts of formatting. I mostly use the function's `big.mark` argument to add thoustands place delineators.
+
+```{r}
+avg_family_income = 103754
+cat("The median household income in Fairfield, CT was $", 
+       prettyNum(avg_family_income, big.mark = ','), 
+       ' in 2010.', sep = "")
+```
+
+Look at that!
+
+
+
+

@@ -14,16 +14,19 @@ categories: ['random_thoughts']
 <pre class="r"><code>library(readr)
 library(dplyr)
 library(ggplot2)
+# getting data from
 # https://www.epa.gov/sites/production/files/2016-08/cherry-blossoms_fig-1.csv
 
+# 
 set.seed(123)
 
 cherry = readr::read_csv(&#39;../../data/cherry.csv&#39;, skip = 6) 
 
-cherry = cherry %&gt;% rbind(c(2017,84,NA))
-
-cherry %&gt;% ggplot(aes(Year, `Yoshino peak bloom date`)) + 
+cherry = cherry %&gt;% 
+        # adding the latest year (2017) data
+        rbind(c(2017,84,NA))</code></pre>
+<pre class="r"><code>cherry %&gt;% ggplot(aes(Year, `Yoshino peak bloom date`)) + 
         geom_line() + 
         geom_smooth() +
         ylab(&#39;Yoshino peak bloom date (days after Jan 1)&#39;)</code></pre>
-<p><img src="/post/2018-02-11-cherry_files/figure-html/test-1.png" width="672" /></p>
+<p><img src="/post/2018-02-11-cherry_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
