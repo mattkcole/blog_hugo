@@ -1,0 +1,54 @@
+---
+title: Pie Charts - What’s the big deal?
+subtitle: Comparing visualization efficiency using R-Shiny
+author: Matt Cole
+date: '2019-01-17'
+slug: pie-charts-what-s-the-big-deal
+categories:
+  - Visualization
+tags:
+  - Pie Charts
+  - Visualization
+  - R
+  - Graphs
+  - Shiny
+---
+
+In data visualization there are many unspoken rules that are 'understood' to be correct. Don't plot in 3-D, don't plot column/bar charts on a logarithmic scale, don't use two y-axes, and never _never_ __ever__ use pie charts. Yet pie charts remain common, especially in business, while some in the statistical/data science community love to hate them. Don't just take my word for it, even the help function in base R for these visualizations (`?pie`) not so subtly suggests that pie charts are terrible: 'Pie charts are a very bad way of displaying information.'. I've never seen so much shade thrown in a help function before (if you have other examples I'd love to see them, really!). But why is there so much disdain for these perfectly circular representations of data? Primarily, there is a belief (that is backed up by empirical results) that it is difficult to assess the magnitude of the difference in size between slices of the pie chart compared with other more 'linearly-interpretable' visualizations such as histograms, column charts, scatter plots, etc. 
+
+```{r echo = FALSE, message=FALSE, fig.width=6, fig.height=4}
+library(tidyverse)
+set.seed(100)
+rbinom(n = 100, size = 1, prob = 0.05) %>%
+        as_data_frame() %>%
+        group_by(value) %>%
+        summarize(x = n()) %>%
+        mutate(color = ifelse(value == 0, 'blue', 'grey')) %>%
+        ggplot(aes(x="", y = color, fill = color)) +
+        geom_bar(width = 1, stat = "identity") +
+        coord_polar("y") +
+        scale_fill_manual(values=c("steelblue", "grey")) +
+        theme(axis.text = element_blank(),
+                                      axis.ticks = element_blank(),
+                                      panel.grid  = element_blank(),
+                                      axis.title.y=element_blank(),
+                                      axis.title.x=element_blank(),
+                                      axis.text.y =element_blank(),
+                                      axis.ticks.y=element_blank(),
+                                      legend.text=element_text(size=16),
+                                      legend.title=element_text(size=20))
+
+```
+
+
+Understanding others' and (especially) our own biases and areas where we can better represent data is extremely important. As such, I decided to create a small shiny app where we can illustrate the impact visualization choice has on understanding of the data. The aim of this app is to assess the relative difference between two categories (with a Mexican food theme), by showing the difficulty of doing so, we will hopefully come away with a better/deeper understanding of these types of visualizations' interpretations as well as a neat method of testing the effectiveness of visualizations.
+
+In addition, when users hit the 'submit' button on the Shiny app, the guess and relative frequencies will be stored. Once we get a few dozen responses I will open source the data in case anyone is interested at playing with those data! 
+
+Happy interpreting :)
+
+
+
+
+
+
