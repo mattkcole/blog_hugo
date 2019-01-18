@@ -45,15 +45,19 @@ rbinom(n = 100, size = 1, prob = 0.05) %>%
 
 Understanding others' and (especially) our own biases and areas where we can better represent data is extremely important for everyone who displays or consumes data (AKA citizens of the world above age 16 save those in the clergy and possibly Guy Fieri). As such, I decided to create a small shiny app which can help us illustrate the impact visualization choice has on our understanding of data. The app simply displays random data in column and pie charts, asking the user to guess the relative size difference between two categories. By showing the difficulty of doing so, we will come away with a better/deeper understanding of these types of visualizations' interpretations and their shortcomings, as well as a neat method of testing the effectiveness of data representations.
 
-[Check it out here!]()
+[Check it out here!](https://mattkcole.shinyapps.io/pie_chart/)
+
+  
 
 Side notes:
 
-1.) When users hit the 'submit' button on the Shiny app, the guess and relative frequencies will be stored. That's it though, no ip address, location data, etc. :)
+1.) When users hit the 'submit' button on the [Shiny app](https://mattkcole.shinyapps.io/pie_chart/), the guess and relative frequencies will be stored. That's it though, no ip address, location data, etc. :)
 
 2.) Once we get a few dozen responses I will open source the results in case anyone is interested in playing with these data! 
 
 3.) As of 2019-01-17 I am hosting the shiny app on the free RStudio server, too much traffic may cause it to be slow or crash. Feel free to fork, make changes, or just run yourself! The repo is here.
+
+4.) The app can be found on github [here](https://github.com/mattkcole/shiny_apps)
 
 
 
