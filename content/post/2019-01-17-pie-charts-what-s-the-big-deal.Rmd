@@ -14,7 +14,9 @@ tags:
   - Shiny
 ---
 
-In data visualization there are many unspoken rules that are 'understood' to be correct. Don't plot in 3-D, don't plot column/bar charts on a logarithmic scale, don't use two y-axes, and never _never_ __ever__ use pie charts. Yet pie charts remain common, especially in business, while some in the statistical/data science community love to hate them. Don't just take my word for it, even the help function in base R for these visualizations (`?pie`) not so subtly suggests that pie charts are terrible: 'Pie charts are a very bad way of displaying information.'. I've never seen so much shade thrown in a help function before (if you have other examples I'd love to see them, really!). But why is there so much disdain for these perfectly circular representations of data? Primarily, there is a belief (that is backed up by empirical results) that it is difficult to assess the magnitude of the difference in size between slices of the pie chart compared with other more 'linearly-interpretable' visualizations such as histograms, column charts, scatter plots, etc. 
+In data visualization there are many unspoken rules which are 'understood' to be correct. Don't plot in 3-D, don't display column/bar charts on a logarithmic scale, don't use two y-axes (or dare I say - more than two), and never _never_ __ever__ use pie charts. Yet pie charts remain common, especially in business, and some in the statistical/data science community just absolutely love to hate them. 
+
+  Don't just take my word for it, even the help function in base R for pie charts (`?pie`) not so subtly suggests that they are terrible: 'Pie charts are a very bad way of displaying information...'. I've never seen so much shade thrown in a help function before (if you have other examples I'd love to see them, really!). But why is there so much disdain for these perfectly circular representations of data? Primarily, there is a belief (that is, yes, backed up by some empirical results) that it is difficult to assess the magnitude of the difference in size between slices of the pie chart compared with other more 'linearly-interpretable' visualizations such as histograms, column charts, scatter plots, etc. However, humans are actually pretty good at understanding pie charts with exactly two partitions. When we move to three or more segments we start to have a difficult time evaluating the _relative_ sizes of each slice. 
 
 ```{r echo = FALSE, message=FALSE, fig.width=6, fig.height=4}
 library(tidyverse)
@@ -41,11 +43,17 @@ rbinom(n = 100, size = 1, prob = 0.05) %>%
 ```
 
 
-Understanding others' and (especially) our own biases and areas where we can better represent data is extremely important. As such, I decided to create a small shiny app where we can illustrate the impact visualization choice has on understanding of the data. The aim of this app is to assess the relative difference between two categories (with a Mexican food theme), by showing the difficulty of doing so, we will hopefully come away with a better/deeper understanding of these types of visualizations' interpretations as well as a neat method of testing the effectiveness of visualizations.
+Understanding others' and (especially) our own biases and areas where we can better represent data is extremely important for everyone who displays or consumes data (AKA citizens of the world above age 16 save those in the clergy and possibly Guy Fieri). As such, I decided to create a small shiny app which can help us illustrate the impact visualization choice has on our understanding of data. The app simply displays random data in column and pie charts, asking the user to guess the relative size difference between two categories. By showing the difficulty of doing so, we will come away with a better/deeper understanding of these types of visualizations' interpretations and their shortcomings, as well as a neat method of testing the effectiveness of data representations.
 
-In addition, when users hit the 'submit' button on the Shiny app, the guess and relative frequencies will be stored. Once we get a few dozen responses I will open source the data in case anyone is interested at playing with those data! 
+[Check it out here!]()
 
-Happy interpreting :)
+Side notes:
+
+1.) When users hit the 'submit' button on the Shiny app, the guess and relative frequencies will be stored. That's it though, no ip address, location data, etc. :)
+
+2.) Once we get a few dozen responses I will open source the results in case anyone is interested in playing with these data! 
+
+3.) As of 2019-01-17 I am hosting the shiny app on the free RStudio server, too much traffic may cause it to be slow or crash. Feel free to fork, make changes, or just run yourself! The repo is here.
 
 
 
