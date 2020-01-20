@@ -1,0 +1,33 @@
+---
+title: Common Ways to Spruce up ggplot2 visuals
+author: Matt Cole
+date: '2019-12-15'
+slug: common-ways-to-spruce-up-ggplot2-visuals
+categories:
+  - Visualization
+tags:
+  - R
+  - ggplot2
+---
+
+I am making this post to serve as a collection of functions and usecases in order to save time googling around for them when I need them in a pinch. 
+
+#### Use the scales package to better format your axis
+
+```{r}
+library(tidyverse)
+salary = read_csv('https://data.baltimorecity.gov/resource/6xv6-e66h.csv')
+salary %>% 
+        group_by(jobtitle) %>% 
+        summarize(n = sum(!is.na(gross)), 
+                  med_pay = median(gross, na.rm = T)) %>% 
+        filter(n > 20)
+```
+
+
+```{r}
+salary %>% 
+        filter(jobtitle == 'Police Officer Trainee')
+        
+
+```

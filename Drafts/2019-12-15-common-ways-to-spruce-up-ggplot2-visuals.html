@@ -1,0 +1,66 @@
+---
+title: Common Ways to Spruce up ggplot2 visuals
+author: Matt Cole
+date: '2019-12-15'
+slug: common-ways-to-spruce-up-ggplot2-visuals
+categories:
+  - Visualization
+tags:
+  - R
+  - ggplot2
+---
+
+
+
+<p>I am making this post to serve as a collection of functions and usecases in order to save time googling around for them when I need them in a pinch.</p>
+<div id="use-the-scales-package-to-better-format-your-axis" class="section level4">
+<h4>Use the scales package to better format your axis</h4>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## ── Attaching packages ─────────────────────────────────────────────────── tidyverse 1.2.1 ──</code></pre>
+<pre><code>## ✔ ggplot2 3.1.0     ✔ purrr   0.2.5
+## ✔ tibble  1.4.2     ✔ dplyr   0.7.8
+## ✔ tidyr   0.8.2     ✔ stringr 1.3.1
+## ✔ readr   1.2.1     ✔ forcats 0.3.0</code></pre>
+<pre><code>## ── Conflicts ────────────────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>salary = read_csv(&#39;https://data.baltimorecity.gov/resource/6xv6-e66h.csv&#39;)</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   name = col_character(),
+##   jobtitle = col_character(),
+##   deptid = col_character(),
+##   descr = col_character(),
+##   hire_dt = col_datetime(format = &quot;&quot;),
+##   annual_rt = col_double(),
+##   gross = col_double()
+## )</code></pre>
+<pre class="r"><code>salary %&gt;% 
+        group_by(jobtitle) %&gt;% 
+        summarize(n = sum(!is.na(gross)), 
+                  med_pay = median(gross, na.rm = T)) %&gt;% 
+        filter(n &gt; 20)</code></pre>
+<pre><code>## # A tibble: 4 x 3
+##   jobtitle                        n med_pay
+##   &lt;chr&gt;                       &lt;int&gt;   &lt;dbl&gt;
+## 1 Community Aide                 21  11088.
+## 2 EMT Firefighter Suppression    26  71875.
+## 3 Laborer Hourly                 40  39561.
+## 4 Police Officer                109  89932.</code></pre>
+<pre class="r"><code>salary %&gt;% 
+        filter(jobtitle == &#39;Police Officer Trainee&#39;)</code></pre>
+<pre><code>## # A tibble: 21 x 7
+##    name       jobtitle    deptid descr     hire_dt             annual_rt  gross
+##    &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;  &lt;chr&gt;     &lt;dttm&gt;                  &lt;dbl&gt;  &lt;dbl&gt;
+##  1 Abdulrahm… Police Off… A99416 Police D… 2018-12-28 00:00:00     53512 25348.
+##  2 Acosta,Ar… Police Off… A99416 Police D… 2019-07-08 00:00:00     53512    NA 
+##  3 Agard,Chr… Police Off… A99416 Police D… 2018-06-13 00:00:00     53512 31369.
+##  4 Alrubaiee… Police Off… A99007 Police D… 2018-10-11 00:00:00     53512 37833.
+##  5 Alston,Em… Police Off… A99416 Police D… 2007-06-23 00:00:00     53512 15616.
+##  6 Anderson,… Police Off… A99416 Police D… 2019-01-28 00:00:00     53512 21061.
+##  7 Anyanwu,E… Police Off… A99416 Police D… 2018-12-27 00:00:00     53512 25545.
+##  8 Aracena-T… Police Off… A99416 Police D… 2019-02-19 00:00:00     53512 19202.
+##  9 Arnold,No… Police Off… A99416 Police D… 2019-01-22 00:00:00     53512 21894.
+## 10 Arroyo,Fr… Police Off… A99416 Police D… 2019-07-29 00:00:00     53512    NA 
+## # ... with 11 more rows</code></pre>
+</div>

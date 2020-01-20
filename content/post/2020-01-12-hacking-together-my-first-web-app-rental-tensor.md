@@ -1,7 +1,7 @@
 ---
 title: Hacking together my first web app in Django
 author: Matt Cole
-date: '2020-01-21'
+date: '2020-01-20'
 slug: hacking-together-my-first-web-app-Django
 categories:
   - web app
