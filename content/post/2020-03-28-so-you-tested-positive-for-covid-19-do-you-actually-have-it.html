@@ -1,0 +1,58 @@
+---
+title: 'So, you tested positive for COVID-19 - Do you actually have the virus?'
+author: "Matt Cole"
+date: '2020-04-20'
+slug: so-you-tested-positive-for-covid-19-do-you-actually-have-the-virus
+tags: ['COVID19', 'coronavirus', 'public health', 'bayes']
+categories: ['Statistics']
+---
+
+
+
+<p>Testing positive for the Coronavirus doesn’t mean one actually has a SARS-CoV-2 infection. Like statistical models, one might say that all medical tests are flawed*, but some (hopefully all that we make decisions based off of) are useful. While creating these tests, scientists balance cost (in <strong>many</strong> ways), speed, generalizability, and of course, accuracy. Most of the time, in the case of a binary test (ex. you are pregnant or you are not, etc.) ‘Accuracy’ can be broken down into two components - sensitivity and specificity.</p>
+<p>Test <strong>sensitivity</strong> is the probability of a test correctly identifying those with the disease as having the disease.</p>
+<p>Test <strong>specificity</strong> is the probability of a test correctly identify those without the disease as not having the disease.</p>
+<p>We can imagine creating a test with 100% sensitivity by always providing a positive reading at the complete expense of specificity and vice versa. Depending on what is more important (not always clear), scientists can improve one at the cost of its counterpart.</p>
+<p>Understanding these concepts and using them in practice can lead to some interesting and sometimes counterintuitive test result interpretation when we start looking at health from a <em>population</em> level. What is the probability of having the disease given I tested positive? What is the probability that my neighbor Dave actually does have the disease given he told me that he tested negative for COVID-19 last week as he continues to try to talk to me while coughing at extremely close distances?!?! You get the idea…</p>
+<p>To figure out (read: estimate) the probability of having the virus given testing positive (or even negative) we can use Bayes Theorem - a simple derivation of the definition of conditional probability:</p>
+<p><span class="math display">\[P(A|B) = \frac{P(B|A)P(A)}{P(B)}\]</span></p>
+<p>equivalently:</p>
+<p><span class="math display">\[P(A|B) = \frac{P(B|A)P(A)}{P(B|A)P(A) + P(B|A^{-})P(A^{-})}\]</span></p>
+<p>Rephrasing in the context of COVID-19:</p>
+<p>The probability of having COVID-19 given you have tested positive for it (<span class="math inline">\(P(D^{+}|T^{+})\)</span>) is equal to the probability of testing positive given you have the disease (<span class="math inline">\(P(T^{+}|D^{+})\)</span>) scaled by the proportion of the population with the disease (<span class="math inline">\(P(D^{+})\)</span>), divided by a member of your population’s probability of testing positive for the disease (<span class="math inline">\(P(T^{+})\)</span>). If we knew (for a fact) each piece of this puzzle, we could correctly state the probability of an individual having COVID19 given they tested positive.</p>
+<p><span class="math display">\[P(D^{+}|T^{+}) = \frac{P(T^{+}|D^{+})P(D^{+})}{P(T^{+})} = \frac{P(T^{+}|D^{+})P(D^{+})}{P(T^{+}|D^{+})P(D^{+}) + P(T^{+}|D^{-})P(D^{-})}\]</span></p>
+<div id="sensitivity-aka-true-positive-rate-or-recall-ptd" class="section level2">
+<h2>Sensitivity (AKA True Positive Rate or Recall): <span class="math inline">\(P(T^{+}|D^{+})\)</span></h2>
+<p>Measures of sensitivity will differ greatly based on the tests conducted. It is reported as being as high as 97% <a href="https://pubs.rsna.org/doi/pdf/10.1148/radiol.2020200642">for some chest CT scans</a> and as low as 30-60% for certain <a href="https://pubs.rsna.org/doi/pdf/10.1148/radiol.2020200642">RT-PCR</a> tests.</p>
+<p>Getting specific, <a href="https://www.centerforhealthsecurity.org/resources/COVID-19/serology/Serology-based-tests-for-COVID-19.html">Cellex Inc.’s Rapid diagnostic test (RDT)</a> which can determine if a sample of blood serum contains antibodies against the virus in less than a half hour has a reported sensitivity of 93.8%. Meaning that 93.8% of those with COVID-19 will be receive a positive result from the test, while the remaining 6.8% will receive a false negative.</p>
+</div>
+<div id="disease-prevalence-pd" class="section level2">
+<h2>Disease Prevalence: <span class="math inline">\(P(D^{+})\)</span></h2>
+<p>To get disease prevalence we can simply divide total number of cases by population size. Except we need to: 1.) Define the population. and 2.) Estimate the prevalence since we cannot know the true number.</p>
+<p>As of 2020-04-18 there are 17,550 <a href="https://docs.google.com/spreadsheets/u/2/d/e/2PACX-1vRwAqp96T9sYYq2-i7Tj0pvTf6XVHjDSMIKBdZHXiCGGdNC0ypEU9NbngS8mxea55JuCFuua1MUeOj5/pubhtml#">confirmed cases</a> in my home state of Connecticut - with an estimated population of 3.5 million, ~0.5% of the population has at one point had a positive test result for the disease. Of course we know that actual prevalence is likely higher than that with. The very <a href="https://statmodeling.stat.columbia.edu/2020/04/20/more-coronavirus-testing-results/">controversial</a> preprint from <a href="https://www.medrxiv.org/content/10.1101/2020.04.14.20062463v1">Stanford University</a> was released the other day, suggesting a prevalence in Santa Clara County under certain assumptions to be as high as ~4.19%.</p>
+<p>While these estimates are fine to get some sort of ballpark estimate. The <em>population</em> when considering <em>population prevelance</em> consists of more than just geographic bounds. For example, in Connecticut, African American’s tested positive for COVID-19 at a rate 20% <a href="https://www.courant.com/coronavirus/hc-news-coronavirus-bridgeport-hospital-covid-19-20200419-lyheuu2adjhbbdfxk6ifud7ya4-story.html">higher than Whites</a>. The population of certain nursing homes also have a much higher prevalence than populations of neighboring communities. We could also imagine that simply displaying a fever or a cough could place you in a high risk ‘group’ where people with those symptoms have a different prevalence than the general population.</p>
+<p>For this example, we will go with a population prevalence of 4%.</p>
+</div>
+<div id="false-positive-rate-aka-fallout-aka-1---specificity-ptd-" class="section level2">
+<h2>False Positive Rate (AKA Fallout AKA 1 - specificity): <span class="math inline">\(P(T^{+}|D^{-})\)</span></h2>
+<p>The <a href="https://www.centerforhealthsecurity.org/resources/COVID-19/serology/Serology-based-tests-for-COVID-19.html">Cellex RDT’s</a> sensitivity is reported to be 95.6%. In other words, its false positive rate is about 4.4%.</p>
+</div>
+<div id="putting-this-all-together-now." class="section level2">
+<h2>Putting this all together now.</h2>
+<p>So we know have some ballpark estimates for the sensitivity, specificity, and prevalence, what does that get us?</p>
+<p><span class="math display">\[ \frac{P(T^{+}|D^{+})P(D^{+})}{P(T^{+}|D^{+})P(D^{+}) + P(T^{+}|D^{-})P(D^{-})}\]</span></p>
+<p><span class="math inline">\(P(T^{+}|D^{+}) = 0.938\)</span></p>
+<p><span class="math inline">\(P(D^{+}) = 0.04\)</span></p>
+<p><span class="math inline">\(P(T^{+}|D^{-}) = 0.044\)</span></p>
+<pre class="r"><code>p = (0.938*0.04)/(0.938*0.04 + 0.044*0.96)</code></pre>
+<p>With these estimates for sensitivity, specificity, and prevalence, a positive test result indicates that you are not actually very likely (probability of 47%) to have the disease.</p>
+<p>This estimate is, however, extremely sensitive to the three inputs. For example, imagine you have all of the symptoms of COVID-19 - you are now no longer in the general population with <span class="math inline">\(p_{g}(D^+)=4\%%\)</span>. Instead, the prevalence <em>in this high risk group</em> may be much higher, perhaps 50% (I don’t really know what it is).</p>
+<pre class="r"><code>p_hr = (0.938*0.5)/(0.938*0.5 + 0.044*0.5)</code></pre>
+<p>If that was the case, with the same test, a positive test would indicate a COVID-19 infection 95.5% of the time.</p>
+<p>This is precisely the reason why we commonly don’t test for diseases (especially rare diseases) randomly. A test with very high sensitivity and specificity is almost useless if the baseline prevalence is near zero as most positives will actually be false positives.</p>
+</div>
+<div id="extra-work" class="section level2">
+<h2>Extra work</h2>
+<p>While this is one of the most basic applications of Bayes theorem that is always covered in undergraduate statistics courses as soon as the theorem is brought up, there are some extensions we can use to get a more credible estimate and (perhaps more importantly) quantify our uncertainty about the estimate. All three parameters we utilized have some uncertainty surrounding them, we could capture these uncertainties in a <a href="https://en.wikipedia.org/wiki/Markov_chain_Monte_Carlo">MCMC</a> to produce estimates and credible intervals around these estimates based on the data we examine.</p>
+<p>* I am not a doctor and this is not medical advice :)</p>
+</div>

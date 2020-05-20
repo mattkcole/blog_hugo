@@ -2,12 +2,12 @@
 title: Hacking together my first web app in Django
 author: Matt Cole
 date: '2020-01-20'
-slug: hacking-together-my-first-web-app-Django
 categories:
   - web app
 tags:
   - building
   - learning
+slug: hacking-together-my-first-web-app-Django
 ---
 
 ### Background

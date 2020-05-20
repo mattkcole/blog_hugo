@@ -1,0 +1,81 @@
+---
+title: Dplyr’s select - tips and tricks
+author: Matt Cole
+date: '2020-05-20'
+slug: dplyr-s-select-tips-and-tricks
+categories:
+  - R
+tags:
+  - dplyr
+  - R
+---
+
+It's not the most interesting function, or even that much fun. But dplyr's `select` has a lot of functionality that is often overlooked. All `select` does is 'select' columns, yet understanding some of its functionality deeper than surface level saves me a bunch of time in my day-to-day work. Let's take a tour of where `dplyr::select` can save you time too, by calling out situations where I find myself using the function over and over again. 
+
+```{r results='hide', message=FALSE, warning=FALSE}
+library(dplyr)
+```
+
+Let's imagine we are working with the following data frame.
+```{r}
+x = tibble(id = 1:100,
+           category1 = rep(c(rep('a',10), rep('b',10)),5),
+           category2 = base::sample(x=c('red','green','blue'),replace = T, size = 100),
+           value1 = round(runif(100),2),
+           value2 = round(rnorm(100,mean = 1),2),
+           value3 = round(rnorm(100,mean = 2),2),
+           value4 = round(rnorm(100,mean = 3),2),
+           value5 = round(rnorm(100,mean = 4),2),
+           value6 = round(rnorm(100,mean = 5),2))
+x %>% head() %>% knitr::kable()
+```
+
+#### We can imagine situations where we want to only grab a specific column or two in a tidy fashion - `dplyr::select` is literally made for that!
+
+```{r}
+x %>%
+        select(id, value2)
+```
+
+#### Now, what if we want to remove a column?
+```{r}
+x %>%
+        select(-id)
+```
+That's right, you can simply drop columns by adding a `-` to the column name. 
+
+#### What about renaming a column?
+```{r}
+x %>%
+        select(color = category2)
+```
+
+This is a handy alternative to using `dplyr::rename`.
+
+#### Ok, but what if we want to rename a column, and grab every other column except for one? 
+
+```{r}
+x %>%
+        select(color = category2, everything(), -id)
+```
+I think of `dplyr::everything` (actually from the `tidyselect` package) as analogous to `SELECT *` in SQL. 
+
+####  Well, what if we want to grab all of our 'value' columns?
+
+```{r}
+x %>%
+        select(starts_with('value'))
+```
+This is particularly handy for selections after [pivoting wider](https://tidyr.tidyverse.org/articles/pivot.html) where we may have many columns that have a certain prefix. See also `dplyr::one_of`.
+
+
+#### Well what if we only want a few value columns?
+Say, 1-4?
+```{r}
+x %>%
+        select(num_range(prefix = 'value', range = 1:4))
+```
+Also see `dplyr::contains` for more ways to select based on matching a literal string.
+
+
+For even more, checkout the [documentation](https://dplyr.tidyverse.org/reference/select.html) and in particular the ['useful functions](https://dplyr.tidyverse.org/reference/select.html#useful-functions) portion.
