@@ -183,7 +183,7 @@ dls.train.show_batch(max_n=10, nrows=2, unique=True)
     
 
 
-What I really love about these images is they really do look like different images of quesadillas. Some are darker, some are lighter, it appears as if we have a whole bunch of vantage points (thanks to the perspective warping which I love!). These synthetically generated images will allow our model to better generalize to new images of Mexican foods as the style of the image changed, but they all remain qualitatively quesadillas. 
+What I really love about these images is they really do look like different pictures of quesadillas. Some are darker, some are lighter, and it appears as if we have a whole bunch of vantage points (thanks to the perspective warping which I love!). These synthetically generated images will allow our model to better generalize to new images of Mexican foods as the style of the image changed, but they all remain qualitatively unchanged - still tasty quesadillas. 
 
 Thanks for reading! Let me know if you have any comments or questions below!
 
